@@ -196,6 +196,19 @@ def full_scorecard() -> str:
         ]
     else:
         recallspection_rows = []
+    if os.environ.get("AGMI_WHITEMAGIC_CRYSTAL_CLIENT"):  # row only with pinned crystal_client.py
+        from agmi.adapters.whitemagic_crystals import (
+            WhiteMagicCrystalsAdapter,
+            WhiteMagicCrystalsAnchoredAdapter,
+            WhiteMagicCrystalsL5Adapter,
+        )
+        whitemagic_rows = [
+            ("whitemagic-crystals", WhiteMagicCrystalsAdapter(), None),
+            ("whitemagic-crystals+anchor", WhiteMagicCrystalsAnchoredAdapter(), None),
+            ("whitemagic-crystals+l5", WhiteMagicCrystalsL5Adapter(), None),
+        ]
+    else:
+        whitemagic_rows = []
     from agmi.adapters.openclaw_memory import openclaw_dir
     if openclaw_dir():  # row only with AGMI_OPENCLAW_DIR; a wrong version fails loudly
         from agmi.adapters.openclaw_memory import OpenClawMemoryAdapter
@@ -305,6 +318,7 @@ def full_scorecard() -> str:
         *atmem_rows,
         *surgical_devops_rows,
         *recallspection_rows,
+        *whitemagic_rows,
         *hdp_rows,
         *([acrf_row] if acrf_row else []),
         *([agent_memory_row] if agent_memory_row else []),

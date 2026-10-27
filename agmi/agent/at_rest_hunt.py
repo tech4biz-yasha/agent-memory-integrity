@@ -146,8 +146,17 @@ def at_rest_target(name: str) -> MemoryAdapter:
     if name == "atmem-chain+checkpoint":
         from agmi.adapters.atmem import AtMemAnchoredAdapter
         return AtMemAnchoredAdapter()
+    if name == "whitemagic-crystals":
+        from agmi.adapters.whitemagic_crystals import WhiteMagicCrystalsAdapter
+        return WhiteMagicCrystalsAdapter()
+    if name == "whitemagic-crystals+anchor":
+        from agmi.adapters.whitemagic_crystals import WhiteMagicCrystalsAnchoredAdapter
+        return WhiteMagicCrystalsAnchoredAdapter()
+    if name == "whitemagic-crystals+l5":
+        from agmi.adapters.whitemagic_crystals import WhiteMagicCrystalsL5Adapter
+        return WhiteMagicCrystalsL5Adapter()
     raise SystemExit(
         f"unknown at-rest target {name!r}; choose one of: reference, "
         f"langgraph-sqlite, llamaindex, crewai, openai-agents, inspeximus-default, "
         f"inspeximus-rcpt+dir, inspeximus-rcpt+dir+home, vertex-memory-bank, bedrock-agentcore-events, surgical-devops-g7, recallspection-exact, recallspection-exact+anchor, hdp-token-content-ref, hdp-token-uuid, openclaw-memory-md, hermes-memory-md, "
-        f"atmem-chain, atmem-chain+checkpoint")
+        f"atmem-chain, atmem-chain+checkpoint, whitemagic-crystals, whitemagic-crystals+anchor, whitemagic-crystals+l5")
