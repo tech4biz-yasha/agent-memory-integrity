@@ -16,9 +16,15 @@ measured here:
 from __future__ import annotations
 
 import importlib
+import os
 import unittest
 
-from agmi.adapters.whitemagic_crystals import (
+import pytest
+
+if not os.environ.get("AGMI_WHITEMAGIC_CRYSTAL_CLIENT"):
+    pytest.skip("AGMI_WHITEMAGIC_CRYSTAL_CLIENT not set", allow_module_level=True)
+
+from agmi.adapters.whitemagic_crystals import (  # noqa: E402
     PIN,
     SPEC_VERSION,
     WhiteMagicCrystalsAdapter,
