@@ -17,7 +17,10 @@ from __future__ import annotations
 
 import importlib
 import os
+from pathlib import Path
+import tempfile
 import unittest
+from unittest.mock import patch
 
 import pytest
 
@@ -26,6 +29,7 @@ if not os.environ.get("AGMI_WHITEMAGIC_CRYSTAL_CLIENT"):
 
 from agmi.adapters.whitemagic_crystals import (  # noqa: E402
     PIN,
+    CLIENT_SHA256,
     SPEC_VERSION,
     WhiteMagicCrystalsAdapter,
     WhiteMagicCrystalsAnchoredAdapter,
@@ -59,7 +63,7 @@ class TestWhiteMagicCrystalsAgmiRow(unittest.TestCase):
     def test_pin_identity(self) -> None:
         self.assertEqual(
             WhiteMagicCrystalsAdapter.measured_on(),
-            f"whitemagic crystal_client {SPEC_VERSION} at {PIN}",
+            f"whitemagic crystal_client {SPEC_VERSION} at {PIN} sha256:{CLIENT_SHA256}",
         )
 
     def test_default_row_rejects_eight_and_accepts_t9_t10(self) -> None:
@@ -76,10 +80,60 @@ class TestWhiteMagicCrystalsAgmiRow(unittest.TestCase):
         for edit_name, status in outcomes.items():
             self.assertEqual(status, "safe", f"expected {edit_name} to be rejected in +anchor row")
 
-    def test_l5_third_party_zero_knowledge_row_rejects_all_ten_edits_without_kek(self) -> None:
+    def test_l5_envelope_audit_detects_all_ten_edits_without_kek(self) -> None:
         outcomes = outcomes_for(WhiteMagicCrystalsL5Adapter)
         for edit_name, status in outcomes.items():
             self.assertEqual(status, "safe", f"expected {edit_name} to be rejected in +l5 row")
+
+    def test_wrong_client_bytes_are_refused_before_execution(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            source = Path(directory) / "crystal_client.py"
+            marker = Path(directory) / "executed"
+            source.write_text(f"open({str(marker)!r}, 'w').write('executed')\n", encoding="utf-8")
+            with patch.dict(os.environ, {"AGMI_WHITEMAGIC_CRYSTAL_CLIENT": str(source)}):
+                with self.assertRaisesRegex(RuntimeError, "pin mismatch"):
+                    WhiteMagicCrystalsAdapter()
+            self.assertFalse(marker.exists())
+
+    def test_plaintext_read_row_rejects_an_isolated_plaintext_edit(self) -> None:
+        adapter = WhiteMagicCrystalsAnchoredAdapter()
+        adapter.setup()
+        try:
+            adapter.seed(3)
+            record = adapter.read_all_raw()[0]
+            record.fields["value"] = "the limit is 999"
+            adapter.write_raw(record)
+            self.assertFalse(adapter.verify())
+            self.assertIn("unsealed plaintext mismatch", adapter.verify_detail)
+        finally:
+            adapter.teardown()
+
+    def test_l5_exposes_envelope_audit_scope_not_detached_plaintext(self) -> None:
+        adapter = WhiteMagicCrystalsL5Adapter()
+        adapter.setup()
+        try:
+            adapter.seed(3)
+            record = adapter.read_all_raw()[0]
+            checked_payload = adapter.payload_of(record)
+            record.fields["value"] = "the limit is 999"
+            adapter.write_raw(record)
+            # This field is outside the row's declared measured payload. A
+            # plaintext consumer must use the unsealing row above instead.
+            self.assertEqual(adapter.payload_of(adapter.read_all_raw()[0]), checked_payload)
+            self.assertNotIn("the limit is 999", checked_payload)
+            self.assertTrue(adapter.verify())
+            self.assertEqual(adapter.detection_point, "audit")
+            self.assertIn("detached plaintext not evaluated", adapter.verify_detail)
+            self.assertIn("scope=signed-ciphertext", adapter.measured_on())
+        finally:
+            adapter.teardown()
+
+    def test_l5_report_labels_detection_as_audit_not_read_refusal(self) -> None:
+        from agmi.check import verdict
+        adapter = WhiteMagicCrystalsL5Adapter()
+        result = suite_mod.TamperAttack().run(adapter)
+        self.assertTrue(result.detected)
+        self.assertEqual(verdict(result, adapter), "REPORTED")
 
     # --- the two variables, held apart ----------------------------------
     def test_high_water_commitment_alone_does_not_catch_erasure_resurrection(self) -> None:

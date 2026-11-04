@@ -29,12 +29,17 @@ content-addressed, lineage-chained memory store for agents.
    AAD (`cipher|tenant_hash|parent_crystal_id|created_at|metadata_public`).
 
 5. What is pinned?
-   `crystal_client.py` from `lbailey94/whitemagic` (`scripts/crystal_client.py` @ `586ed21` / `0fe89e3`),
-   Python 3.12 + `cryptography`. Two configurations:
+   `crystal_client.py` from `lbailey94/whitemagic`, full commit and file SHA-256
+   below. The selected source bytes are checked before importing. Python 3.12
+   + `cryptography`. Two plaintext-read configurations:
      - `whitemagic-crystals`: commitment stored inside `store-<ctx>/` on the
        same disk.
      - `whitemagic-crystals+anchor`: commitment stored outside the store
        directory (`offstore-anchors/`), detecting whole-store snapshot rollback (T9).
+   The legacy `whitemagic-crystals+l5` row is a separate encrypted-envelope
+   audit without the KEK. Its payload is the signed ciphertext, not the detached
+   plaintext `value`; it does not measure a verified plaintext read path or a
+   formal zero-knowledge proof.
 """
 
 from __future__ import annotations
@@ -42,6 +47,7 @@ from __future__ import annotations
 import base64
 import copy
 import datetime as dt
+import hashlib
 import importlib.util
 import json
 import os
@@ -56,7 +62,8 @@ from cryptography.hazmat.primitives.serialization import Encoding, PublicFormat
 
 from agmi.adapters.base import MemoryAdapter, Record
 
-PIN = "0fe89e3"
+PIN = "0fe89e35abce9fcd2d918d79a54f8763bf1acdea"
+CLIENT_SHA256 = "ddf740898d4282ac68451cece42373c34ef03a17a610d44b8886b0c558b01b1c"
 SPEC_VERSION = "wm-crystal/1.0"
 CTX, OTHER = "a", "b"
 STORE_FILE = "crystals.json"
@@ -99,10 +106,19 @@ def _load_crystal_client():
             f"{CRYSTAL_CLIENT_ENV} to scripts/crystal_client.py from "
             "github.com/lbailey94/whitemagic at the pinned commit"
         )
+    source = p.read_bytes()
+    observed = hashlib.sha256(source).hexdigest()
+    if observed != CLIENT_SHA256:
+        raise RuntimeError(
+            f"crystal_client.py pin mismatch: expected SHA-256 {CLIENT_SHA256} "
+            f"from {PIN}, observed {observed}"
+        )
     spec = importlib.util.spec_from_file_location("wm_crystal_client", p)
     mod = importlib.util.module_from_spec(spec)
     assert spec and spec.loader
-    spec.loader.exec_module(mod)
+    # Execute exactly the checked bytes, rather than reopening the path after
+    # the check (which would leave a file-swap race).
+    exec(compile(source, str(p), "exec"), mod.__dict__)
     return mod
 
 
@@ -124,7 +140,7 @@ class WhiteMagicCrystalsAdapter(MemoryAdapter):
 
     @staticmethod
     def measured_on() -> str:
-        return f"whitemagic crystal_client {SPEC_VERSION} at {PIN}"
+        return f"whitemagic crystal_client {SPEC_VERSION} at {PIN} sha256:{CLIENT_SHA256}"
 
     def _dir(self, ctx: str) -> Path:
         assert self._root is not None
@@ -410,10 +426,29 @@ class WhiteMagicCrystalsAnchoredAdapter(WhiteMagicCrystalsAdapter):
 
 
 class WhiteMagicCrystalsL5Adapter(WhiteMagicCrystalsAnchoredAdapter):
-    """Level L5 third-party zero-knowledge verifier: verifies the crystal chain and off-store commitment without the client KEK."""
+    """Legacy L5 label: signed encrypted-envelope audit without a decryption key.
+
+    This row measures envelope integrity at audit time. Its ciphertext payload
+    deliberately excludes the detached plaintext field, which cannot be bound
+    to ciphertext without unsealing or an additional proof construction.
+    """
 
     name = "whitemagic-crystals+l5"
     anchor_off_store = True
+    detection_point = "audit"
+
+    @staticmethod
+    def measured_on() -> str:
+        return (
+            WhiteMagicCrystalsAdapter.measured_on()
+            + " scope=signed-ciphertext audit-only no-KEK"
+        )
+
+    def payload_of(self, record: Record) -> str:
+        # Metadata has its own T8 edit/control. Exposing ciphertext as content
+        # keeps that independent variable separate while binding this payload
+        # to what the no-KEK verifier actually checks.
+        return str(record.fields["env"]["ciphertext"])
 
     def verify(self) -> bool:
         self.verify_detail = None
@@ -438,5 +473,8 @@ class WhiteMagicCrystalsL5Adapter(WhiteMagicCrystalsAnchoredAdapter):
         except (ValueError, InvalidTag) as exc:
             self.verify_detail = f"{type(exc).__name__}: {exc}"[:200]
             return False
-        self.verify_detail = f"verified {len(envelopes)} crystals third-party zero-knowledge (no KEK) ok"
+        self.verify_detail = (
+            f"audited {len(envelopes)} signed encrypted envelopes without KEK; "
+            "detached plaintext not evaluated"
+        )
         return True
