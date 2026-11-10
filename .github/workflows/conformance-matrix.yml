@@ -1,0 +1,15 @@
+name: conformance-matrix
+on:
+  pull_request:
+  push:
+    branches: [main]
+jobs:
+  report-reader:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements-conformance.txt
+      - run: agent-evidence-vectors --read-w3c-report results/report-v01.json
