@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.7.0 (2026-11-11)
 
 - T10, erasure resurrection: the tool erases a record through its own API, the attacker restores a copy of the store taken before that erasure, and the tool reads. Same three verdicts; control C3 checks that the tool's erasure removed exactly what it named and that the restore brought the store back exactly. Whole-context erasure is allowed where that is the only erasure the API offers (LangGraph `delete_thread`, LlamaIndex `Memory.reset`); a store with no erasure operation reads not evaluable with that reason. Hooks on the reference store (rejects: its witness moves to the post-erasure head), the three LangGraph checkpointers, the OpenAI Agents SDK session (`pop_item`), LlamaIndex Memory, Mem0 (`delete`) and Recallspection. `agmi-check` runs it; the public table gains the column once every row carries a cell or a reason.
 - `python -m agmi.merge_rows` carries a row measured before a new attack existed with that cell as not evaluable and the reason stated, so a column can be added without losing rows measured in other environments; a run with an unknown attack or a moved version is still refused.
