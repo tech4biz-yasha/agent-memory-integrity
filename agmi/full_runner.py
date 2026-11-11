@@ -200,12 +200,12 @@ def full_scorecard() -> str:
         from agmi.adapters.whitemagic_crystals import (
             WhiteMagicCrystalsAdapter,
             WhiteMagicCrystalsAnchoredAdapter,
-            WhiteMagicCrystalsL5Adapter,
+            WhiteMagicCrystalsCiphertextAuditAdapter,
         )
         whitemagic_rows = [
             ("whitemagic-crystals", WhiteMagicCrystalsAdapter(), None),
             ("whitemagic-crystals+anchor", WhiteMagicCrystalsAnchoredAdapter(), None),
-            ("whitemagic-crystals+l5", WhiteMagicCrystalsL5Adapter(), None),
+            ("whitemagic-crystals+ciphertext-audit", WhiteMagicCrystalsCiphertextAuditAdapter(), None),
         ]
     else:
         whitemagic_rows = []

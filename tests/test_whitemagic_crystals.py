@@ -1,5 +1,5 @@
 """Pin test for the WhiteMagic Memory Crystals agmi rows
-(`whitemagic-crystals`, `whitemagic-crystals+anchor`, `whitemagic-crystals+l5`).
+(`whitemagic-crystals`, `whitemagic-crystals+anchor`, `whitemagic-crystals+ciphertext-audit`).
 
 Ten edits, including T10 erasure resurrection. Two independent variables are
 measured here:
@@ -33,6 +33,7 @@ from agmi.adapters.whitemagic_crystals import (  # noqa: E402
     SPEC_VERSION,
     WhiteMagicCrystalsAdapter,
     WhiteMagicCrystalsAnchoredAdapter,
+    WhiteMagicCrystalsCiphertextAuditAdapter,
     WhiteMagicCrystalsL5Adapter,
 )
 
@@ -80,10 +81,10 @@ class TestWhiteMagicCrystalsAgmiRow(unittest.TestCase):
         for edit_name, status in outcomes.items():
             self.assertEqual(status, "safe", f"expected {edit_name} to be rejected in +anchor row")
 
-    def test_l5_envelope_audit_detects_all_ten_edits_without_kek(self) -> None:
-        outcomes = outcomes_for(WhiteMagicCrystalsL5Adapter)
+    def test_ciphertext_audit_envelope_audit_detects_all_ten_edits_without_kek(self) -> None:
+        outcomes = outcomes_for(WhiteMagicCrystalsCiphertextAuditAdapter)
         for edit_name, status in outcomes.items():
-            self.assertEqual(status, "safe", f"expected {edit_name} to be rejected in +l5 row")
+            self.assertEqual(status, "safe", f"expected {edit_name} to be rejected in +ciphertext-audit row")
 
     def test_wrong_client_bytes_are_refused_before_execution(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -108,8 +109,8 @@ class TestWhiteMagicCrystalsAgmiRow(unittest.TestCase):
         finally:
             adapter.teardown()
 
-    def test_l5_exposes_envelope_audit_scope_not_detached_plaintext(self) -> None:
-        adapter = WhiteMagicCrystalsL5Adapter()
+    def test_ciphertext_audit_exposes_envelope_audit_scope_not_detached_plaintext(self) -> None:
+        adapter = WhiteMagicCrystalsCiphertextAuditAdapter()
         adapter.setup()
         try:
             adapter.seed(3)
@@ -128,12 +129,15 @@ class TestWhiteMagicCrystalsAgmiRow(unittest.TestCase):
         finally:
             adapter.teardown()
 
-    def test_l5_report_labels_detection_as_audit_not_read_refusal(self) -> None:
+    def test_ciphertext_audit_report_labels_detection_as_audit_not_read_refusal(self) -> None:
         from agmi.check import verdict
-        adapter = WhiteMagicCrystalsL5Adapter()
+        adapter = WhiteMagicCrystalsCiphertextAuditAdapter()
         result = suite_mod.TamperAttack().run(adapter)
         self.assertTrue(result.detected)
         self.assertEqual(verdict(result, adapter), "REPORTED")
+
+    def test_legacy_l5_alias_identical_to_ciphertext_audit(self) -> None:
+        self.assertIs(WhiteMagicCrystalsL5Adapter, WhiteMagicCrystalsCiphertextAuditAdapter)
 
     # --- the two variables, held apart ----------------------------------
     def test_high_water_commitment_alone_does_not_catch_erasure_resurrection(self) -> None:

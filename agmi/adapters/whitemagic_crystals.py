@@ -36,10 +36,10 @@ content-addressed, lineage-chained memory store for agents.
        same disk.
      - `whitemagic-crystals+anchor`: commitment stored outside the store
        directory (`offstore-anchors/`), detecting whole-store snapshot rollback (T9).
-   The legacy `whitemagic-crystals+l5` row is a separate encrypted-envelope
-   audit without the KEK. Its payload is the signed ciphertext, not the detached
-   plaintext `value`; it does not measure a verified plaintext read path or a
-   formal zero-knowledge proof.
+   The `whitemagic-crystals+ciphertext-audit` row (formerly `whitemagic-crystals+l5`)
+   is a separate encrypted-envelope audit without the KEK. Its payload is the signed
+   ciphertext, not the detached plaintext `value`; it does not measure a verified
+   plaintext read path or a formal zero-knowledge proof.
 """
 
 from __future__ import annotations
@@ -425,15 +425,16 @@ class WhiteMagicCrystalsAnchoredAdapter(WhiteMagicCrystalsAdapter):
     anchor_off_store = True
 
 
-class WhiteMagicCrystalsL5Adapter(WhiteMagicCrystalsAnchoredAdapter):
-    """Legacy L5 label: signed encrypted-envelope audit without a decryption key.
+class WhiteMagicCrystalsCiphertextAuditAdapter(WhiteMagicCrystalsAnchoredAdapter):
+    """Signed encrypted-envelope audit without a decryption key.
 
-    This row measures envelope integrity at audit time. Its ciphertext payload
-    deliberately excludes the detached plaintext field, which cannot be bound
-    to ciphertext without unsealing or an additional proof construction.
+    Formerly known as whitemagic-crystals+l5. This row measures envelope integrity
+    at audit time. Its ciphertext payload deliberately excludes the detached plaintext
+    field, which cannot be bound to ciphertext without unsealing or an additional proof
+    construction.
     """
 
-    name = "whitemagic-crystals+l5"
+    name = "whitemagic-crystals+ciphertext-audit"
     anchor_off_store = True
     detection_point = "audit"
 
@@ -478,3 +479,8 @@ class WhiteMagicCrystalsL5Adapter(WhiteMagicCrystalsAnchoredAdapter):
             "detached plaintext not evaluated"
         )
         return True
+
+
+# Backward-compatible alias for the legacy working name
+WhiteMagicCrystalsL5Adapter = WhiteMagicCrystalsCiphertextAuditAdapter
+

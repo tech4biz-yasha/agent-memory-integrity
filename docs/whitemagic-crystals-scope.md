@@ -4,8 +4,12 @@ The plaintext rows (`whitemagic-crystals` and `whitemagic-crystals+anchor`)
 unseal the encrypted values and compare the returned bytes to the stored
 plaintext values. Their edit-detection point is the verified read path.
 
-The legacy `whitemagic-crystals+l5` name identifies an encrypted-envelope
-audit without the decryption key. Its content-payload hook exposes the signed
+The `whitemagic-crystals+ciphertext-audit` row identifies an encrypted-envelope
+audit without the decryption key. The earlier `whitemagic-crystals+l5` label
+originally claimed a safe plaintext read; that name was retired and renamed to
+`whitemagic-crystals+ciphertext-audit` when a detached-plaintext counterfactual
+proved that no-KEK verification authenticates the signed ciphertext envelope
+rather than independently stored plaintext fields. Its content-payload hook exposes the signed
 ciphertext; metadata is checked separately by the same envelope audit and its
 T8 control. A detached plaintext cache is outside that measured payload.
 The row reports `detection_point=audit` and successful detection is `REPORTED`,
