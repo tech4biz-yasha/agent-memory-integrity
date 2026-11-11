@@ -98,7 +98,7 @@ def _require_reader() -> None:
     if w3c is None:
         sys.exit(
             "agmi.report_v01 needs the group's reference reader: "
-            'pip install -e ".[vectors]"  (agent-evidence-vectors==0.18.1)'
+            'pip install -e ".[vectors]"'
         )
 
 
