@@ -1,7 +1,7 @@
 # Agent Memory Integrity (agmi)
 > A conformance test suite that measures whether AI agent memory and checkpoint stores notice when they are tampered with.
 
-Version 0.6.3, measured 2026-10-19. Source: https://github.com/tech4biz-yasha/agmi
+Version 0.7.0, measured 2026-10-19. Source: https://github.com/tech4biz-yasha/agmi
 Method text proposed for IETF draft-han-bmwg-agent-security-benchmark metric 5.4.7.
 
 ## At rest (nine storage-level edits, attacker has store access, no keys)
