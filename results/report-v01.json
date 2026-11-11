@@ -13044,7 +13044,7 @@
   "fixed": {
     "checker": {
       "name": "agmi",
-      "version": "0.6.3"
+      "version": "0.7.0"
     },
     "constraint-set": {
       "attack-versions": {
