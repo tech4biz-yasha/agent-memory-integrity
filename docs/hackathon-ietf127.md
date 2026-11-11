@@ -4,7 +4,7 @@
 Remote, Saturday 14 November 2026, 09:00 to 13:00 Pacific (17:00 to 21:00 UTC, 22:30 to 02:30 IST).
 Champion: Yasha Khandelwal, yasha.khandelwal@tech4biz.io. The meeting link goes by email to everyone who writes ahead; write for other hours if these do not suit you.
 
-The method is draft-khandelwal-bmwg-agent-memory-integrity. You bring the memory or checkpoint store your agent uses and leave with its own row: ten edits applied beneath the store's own API, read back through that API, each one recorded as refused on read, served and reported at a later audit, or served as genuine.
+The method is draft-khandelwal-bpm-agent-memory-integrity. You bring the memory or checkpoint store your agent uses and leave with its own row: ten edits applied beneath the store's own API, read back through that API, each one recorded as refused on read, served and reported at a later audit, or served as genuine.
 
 ## Before the day (30 minutes, on your own)
 
@@ -92,7 +92,7 @@ A row you can reproduce with one command, pinned to the version you measured; an
 
 ## Links
 
-- Draft: https://datatracker.ietf.org/doc/draft-khandelwal-bmwg-agent-memory-integrity/
+- Draft: https://datatracker.ietf.org/doc/draft-khandelwal-bpm-agent-memory-integrity/
 - Code: https://github.com/tech4biz-yasha/agent-memory-integrity
 - Scorecard: https://agentmemoryintegrity.org
 - Guide: `docs/adding-a-row.md` in the repository
