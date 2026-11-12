@@ -11,7 +11,7 @@ The method is draft-khandelwal-bpm-agent-memory-integrity. You bring the memory 
 Do this before Saturday so the four hours go on your store, not on setup.
 
 1. Python 3.11 or later, and git.
-2. Clone the suite and install it. The clone is required: the PyPI release still runs nine edits, and the tenth, erasure resurrection, is on main.
+2. Clone the suite and install it. The published release, 0.7.0, carries all ten edits, so `pip install agent-memory-integrity` is enough to run them; clone anyway if you want to write an adapter for your own store, which is what most of the day is.
 
 ```
 git clone https://github.com/tech4biz-yasha/agent-memory-integrity
