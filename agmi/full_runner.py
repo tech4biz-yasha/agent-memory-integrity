@@ -220,6 +220,15 @@ def full_scorecard() -> str:
         hermes_row = [("hermes-memory-md", HermesMemoryAdapter(), None)]
     else:
         hermes_row = []
+    from agmi.adapters.verax_memory import verax_dir
+    if verax_dir():  # rows only with AGMI_VERAX_DIR; a wrong version fails loudly
+        from agmi.adapters.verax_memory import VeraxMemoryAdapter, VeraxMemoryHeadOutsideAdapter
+        verax_rows = [
+            ("verax-memory", VeraxMemoryAdapter(), None),
+            ("verax-memory+head-outside", VeraxMemoryHeadOutsideAdapter(), None),
+        ]
+    else:
+        verax_rows = []
     try:
         import langgraph.checkpoint.redis  # noqa: F401
         from agmi.adapters.langgraph_redis import LangGraphRedisAdapter, redis_uri
@@ -306,6 +315,7 @@ def full_scorecard() -> str:
         *bedrock_rows,
         *openclaw_row,
         *hermes_row,
+        *verax_rows,
         *([("langgraph-sqlite-store", None, lg_store)] if lg_store else []),
         *([letta_row] if letta_row else []),
         *([("letta-archival", None, letta_archival)] if letta_archival else []),
