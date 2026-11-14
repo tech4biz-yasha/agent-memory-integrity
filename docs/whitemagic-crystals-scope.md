@@ -1,8 +1,11 @@
 # WhiteMagic crystal adapter scope
 
-The plaintext rows (`whitemagic-crystals` and `whitemagic-crystals+anchor`)
-unseal the encrypted values and compare the returned bytes to the stored
-plaintext values. Their edit-detection point is the verified read path.
+The plaintext rows (`whitemagic-crystals` — shipped `LocalCrystalStore` default
+auto-persisting its off-store anchor under `$XDG_STATE_HOME/whitemagic/anchors/`
+— and the `whitemagic-crystals+in-store` counterfactual keeping `commitment.json`
+inside `store-<ctx>/`) unseal the encrypted values and compare the returned
+bytes to the stored plaintext values. Their edit-detection point is the
+verified read path.
 
 The `whitemagic-crystals+ciphertext-audit` row identifies an encrypted-envelope
 audit without the decryption key. The earlier `whitemagic-crystals+l5` label
