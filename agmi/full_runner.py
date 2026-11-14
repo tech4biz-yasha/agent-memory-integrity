@@ -199,12 +199,12 @@ def full_scorecard() -> str:
     if os.environ.get("AGMI_WHITEMAGIC_CRYSTAL_CLIENT"):  # row only with pinned crystal_client.py
         from agmi.adapters.whitemagic_crystals import (
             WhiteMagicCrystalsAdapter,
-            WhiteMagicCrystalsAnchoredAdapter,
             WhiteMagicCrystalsCiphertextAuditAdapter,
+            WhiteMagicCrystalsInStoreAdapter,
         )
         whitemagic_rows = [
             ("whitemagic-crystals", WhiteMagicCrystalsAdapter(), None),
-            ("whitemagic-crystals+anchor", WhiteMagicCrystalsAnchoredAdapter(), None),
+            ("whitemagic-crystals+in-store", WhiteMagicCrystalsInStoreAdapter(), None),
             ("whitemagic-crystals+ciphertext-audit", WhiteMagicCrystalsCiphertextAuditAdapter(), None),
         ]
     else:
