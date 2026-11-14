@@ -1,11 +1,13 @@
 """Pin test for the WhiteMagic Memory Crystals agmi rows
-(`whitemagic-crystals`, `whitemagic-crystals+anchor`, `whitemagic-crystals+ciphertext-audit`).
+(`whitemagic-crystals`, `whitemagic-crystals+in-store`, `whitemagic-crystals+ciphertext-audit`).
 
 Ten edits, including T10 erasure resurrection. Two independent variables are
 measured here:
 
-* anchor *location* — inside `store-<ctx>/` (rolls back with a restored copy)
-  versus outside it (does not) — separates T9 whole-store rollback;
+* anchor *location* — inside `store-<ctx>/` (`whitemagic-crystals+in-store`,
+  rolls back with a restored copy) versus automatically persisted outside it
+  under `$XDG_STATE_HOME` (`whitemagic-crystals`, `LocalCrystalStore` default,
+  does not) — separates T9 whole-store rollback;
 * anchor *content* — a high-water count alone versus an erasure-aware
   commitment (`erasure_count`, `erased_crystal_ids_digest`, `revision`) —
   separates T10. A count that only grows cannot see an erasure being undone,
@@ -32,10 +34,11 @@ from agmi.adapters.whitemagic_crystals import (  # noqa: E402
     CLIENT_SHA256,
     SPEC_VERSION,
     WhiteMagicCrystalsAdapter,
-    WhiteMagicCrystalsAnchoredAdapter,
     WhiteMagicCrystalsCiphertextAuditAdapter,
+    WhiteMagicCrystalsInStoreAdapter,
     WhiteMagicCrystalsL5Adapter,
 )
+from agmi.agent.compose import compose  # noqa: E402
 
 suite_mod = importlib.import_module("agmi." + "att" + "acks.at_rest")
 CASES = getattr(suite_mod, "AT_REST_" + "ATT" + "ACKS_WITH_ERASE")
@@ -67,19 +70,19 @@ class TestWhiteMagicCrystalsAgmiRow(unittest.TestCase):
             f"whitemagic crystal_client {SPEC_VERSION} at {PIN} sha256:{CLIENT_SHA256}",
         )
 
-    def test_default_row_rejects_eight_and_accepts_t9_t10(self) -> None:
+    def test_default_row_rejects_all_ten_edits_on_read_path(self) -> None:
         outcomes = outcomes_for(WhiteMagicCrystalsAdapter)
-        for edit_name in REJECTS_EIGHT:
-            self.assertEqual(outcomes[edit_name], "safe", f"expected {edit_name} to be rejected")
-        # The commitment lives inside the store, so a restored copy restores it too.
-        self.assertEqual(outcomes["snapshot_rollback"], "VULNERABLE")
-        self.assertEqual(outcomes["erase_resurrect"], "VULNERABLE")
-
-    def test_anchored_row_rejects_all_ten_edits_on_read_path(self) -> None:
-        outcomes = outcomes_for(WhiteMagicCrystalsAnchoredAdapter)
         self.assertEqual(len(outcomes), 10)
         for edit_name, status in outcomes.items():
-            self.assertEqual(status, "safe", f"expected {edit_name} to be rejected in +anchor row")
+            self.assertEqual(status, "safe", f"expected {edit_name} to be rejected in default row")
+
+    def test_instore_counterfactual_rejects_eight_and_accepts_t9_t10(self) -> None:
+        outcomes = outcomes_for(WhiteMagicCrystalsInStoreAdapter)
+        for edit_name in REJECTS_EIGHT:
+            self.assertEqual(outcomes[edit_name], "safe", f"expected {edit_name} to be rejected")
+        # The counterfactual places commitment.json inside the store, so a restored copy restores it too.
+        self.assertEqual(outcomes["snapshot_rollback"], "VULNERABLE")
+        self.assertEqual(outcomes["erase_resurrect"], "VULNERABLE")
 
     def test_ciphertext_audit_envelope_audit_detects_all_ten_edits_without_kek(self) -> None:
         outcomes = outcomes_for(WhiteMagicCrystalsCiphertextAuditAdapter)
@@ -97,7 +100,7 @@ class TestWhiteMagicCrystalsAgmiRow(unittest.TestCase):
             self.assertFalse(marker.exists())
 
     def test_plaintext_read_row_rejects_an_isolated_plaintext_edit(self) -> None:
-        adapter = WhiteMagicCrystalsAnchoredAdapter()
+        adapter = WhiteMagicCrystalsAdapter()
         adapter.setup()
         try:
             adapter.seed(3)
@@ -139,9 +142,17 @@ class TestWhiteMagicCrystalsAgmiRow(unittest.TestCase):
     def test_legacy_l5_alias_identical_to_ciphertext_audit(self) -> None:
         self.assertIs(WhiteMagicCrystalsL5Adapter, WhiteMagicCrystalsCiphertextAuditAdapter)
 
+    def test_default_row_has_no_composite_hole_with_compose(self) -> None:
+        _authz, findings = compose(
+            lambda: WhiteMagicCrystalsAdapter(),
+            target="whitemagic-crystals",
+            max_len=2,
+        )
+        self.assertEqual(findings, [])
+
     # --- the two variables, held apart ----------------------------------
     def test_high_water_commitment_alone_does_not_catch_erasure_resurrection(self) -> None:
-        """Same store, same off-store anchor location, high-water commitment only.
+        """Same store, off-store anchor location, high-water commitment only.
 
         This is the counterfactual that isolates the second variable: with the
         anchor outside the store but committing only to a count, T9 is refused
@@ -149,10 +160,13 @@ class TestWhiteMagicCrystalsAgmiRow(unittest.TestCase):
         """
         import json
 
-        class HighWaterOnly(WhiteMagicCrystalsAnchoredAdapter):
-            def _save_anchor(self, ctx, entries):  # noqa: ANN001
+        class HighWaterOnly(WhiteMagicCrystalsInStoreAdapter):
+            def _anchor_path(self, ctx: str) -> Path:
+                assert self._root is not None
+                return self._root / f"off-store-{ctx}.json"
+
+            def _save_anchor(self, ctx, envs):  # noqa: ANN001
                 apath = self._anchor_path(ctx)
-                envs = [e["env"] for e in entries]
                 if apath.is_file():
                     try:
                         cur = json.loads(apath.read_text(encoding="utf-8"))
@@ -162,7 +176,9 @@ class TestWhiteMagicCrystalsAgmiRow(unittest.TestCase):
                         pass
                 apath.parent.mkdir(parents=True, exist_ok=True)
                 comm = self._cc.compute_crystal_set_commitment(
-                    envs, self._tenant_hash(ctx), signing_key=__import__(
+                    envs,
+                    self._tenant_hash(ctx),
+                    signing_key=__import__(
                         "agmi.adapters.whitemagic_crystals", fromlist=["x"]
                     ).ANCHOR_PRIV_BYTES,
                 )
@@ -172,12 +188,12 @@ class TestWhiteMagicCrystalsAgmiRow(unittest.TestCase):
                 from agmi.adapters import whitemagic_crystals as w
 
                 self.verify_detail = None
-                entries = self._load_entries(w.CTX)
+                envs = self._load_envelopes(w.CTX)
                 apath = self._anchor_path(w.CTX)
                 comm = json.loads(apath.read_text(encoding="utf-8")) if apath.is_file() else None
                 try:
                     self._cc.verify_and_unseal_crystal_set(
-                        [e["env"] for e in entries],
+                        envs,
                         w.KEK,
                         self._tenant_hash(w.CTX),
                         expected_commitment=comm,
