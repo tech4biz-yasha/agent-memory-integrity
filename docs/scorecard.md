@@ -38,6 +38,8 @@ Generated from the results file by `agmi.render`; do not edit by hand. Run of 20
 | atmem-chain+checkpoint | audit | reported | reported | reported | reported | reported |
 | agent-memory | read | rejected | rejected | rejected | rejected | rejected |
 | surgical-devops-g7 | read | rejected | rejected | rejected | rejected | rejected |
+| verax-memory | read | rejected | rejected | rejected | rejected | rejected |
+| verax-memory+head-outside | read | rejected | rejected | rejected | rejected | rejected |
 
 ## Through the front door
 
@@ -536,3 +538,31 @@ Measured on: surgical-dev-ops 2.6.0-rc.6 at f267cf38, Node v24.18.0
 - `rollback_replay`: rejected. detected on reload (Error: Persisted G7 authorization record does not match its requested storage position.).
 - `metadata_tamper`: rejected. detected on reload (Error: Store-integrity envelope contains missing or unknown fields.).
 - `snapshot_rollback`: rejected. the store noticed it was older than its last committed state (Error: G7 whole-store root does not match the independent monotonic witness.).
+
+### verax-memory
+
+Measured on: macOS, Python 3.12, Node v22.23.5, @verax-ai/body 0.8.2, 2026-11-14
+
+- `tamper`: rejected. detected on reload (memory.get a3: memory-integrity-mismatch).
+- `truncate`: rejected. detected on reload (memory.get a4: memory-integrity-missing).
+- `delete_middle`: rejected. detected on reload (memory.get a3: memory-integrity-missing).
+- `reorder`: rejected. detected on reload (memory.get a2: memory-integrity-mismatch).
+- `forge`: rejected. detected on reload (memory.get a99: memory-integrity-unattested).
+- `cross_replay`: rejected. detected on reload (memory.get a5: memory-integrity-mismatch).
+- `rollback_replay`: rejected. detected on reload (memory.get a5: memory-integrity-mismatch).
+- `metadata_tamper`: rejected. detected on reload (memory.get a3: memory-integrity-mismatch).
+- `snapshot_rollback`: accepted. the older copy opened as current; the newest genuine record is gone without an error.
+
+### verax-memory+head-outside
+
+Measured on: macOS, Python 3.12, Node v22.23.5, @verax-ai/body 0.8.2, 2026-11-14
+
+- `tamper`: rejected. detected on reload (memory.get a3: memory-integrity-mismatch).
+- `truncate`: rejected. detected on reload (memory.get a4: memory-integrity-missing).
+- `delete_middle`: rejected. detected on reload (memory.get a3: memory-integrity-missing).
+- `reorder`: rejected. detected on reload (memory.get a2: memory-integrity-mismatch).
+- `forge`: rejected. detected on reload (memory.get a99: memory-integrity-unattested).
+- `cross_replay`: rejected. detected on reload (memory.get a5: memory-integrity-mismatch).
+- `rollback_replay`: rejected. detected on reload (memory.get a5: memory-integrity-mismatch).
+- `metadata_tamper`: rejected. detected on reload (memory.get a3: memory-integrity-mismatch).
+- `snapshot_rollback`: rejected. the store noticed it was older than its last committed state (memory.get a1: memory-integrity-history-unavailable).

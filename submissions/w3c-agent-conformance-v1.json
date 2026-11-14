@@ -983,7 +983,7 @@
  "anchor": {
   "git": {
    "repository": "https://github.com/tech4biz-yasha/agent-memory-integrity",
-   "commit": "7f91b0b575ef8e4a68081c7a2d484a5843eb7f29",
+   "commit": "0be94008a7982e7675a6bc939e20f6da76c85a87",
    "availability_failure": "commit does not resolve on the host",
    "integrity_failure": "commit resolves but results/scorecard.json digest differs"
   },
@@ -997,7 +997,7 @@
  },
  "checker": {
   "name": "agmi full runner and merge tool",
-  "source_revision": "7f91b0b575ef8e4a68081c7a2d484a5843eb7f29",
+  "source_revision": "0be94008a7982e7675a6bc939e20f6da76c85a87",
   "command": "PYTHONPATH=. python agmi/full_runner.py --json <out>; python -m agmi.merge_rows results/scorecard.json <out> --labels <row>",
   "runtime": "Darwin x86_64, Python 3.12",
   "attack_versions": {
