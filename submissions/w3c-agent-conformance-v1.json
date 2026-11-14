@@ -963,7 +963,7 @@
     "recount_agrees": true
    },
    "stores_measured_badge": {
-    "value": 26,
+    "value": 27,
     "source": "README.md badge",
     "recount_agrees": null,
     "note": "no recount exists: 'store' has no decision rule in the results file and the badge is maintained by hand, so this total is reported here and not compared; a disagreement cannot be detected from the record"
@@ -983,7 +983,7 @@
  "anchor": {
   "git": {
    "repository": "https://github.com/tech4biz-yasha/agent-memory-integrity",
-   "commit": "0be94008a7982e7675a6bc939e20f6da76c85a87",
+   "commit": "1878fe9d2409563456812718f6130c1164513e7b",
    "availability_failure": "commit does not resolve on the host",
    "integrity_failure": "commit resolves but results/scorecard.json digest differs"
   },
@@ -997,7 +997,7 @@
  },
  "checker": {
   "name": "agmi full runner and merge tool",
-  "source_revision": "0be94008a7982e7675a6bc939e20f6da76c85a87",
+  "source_revision": "1878fe9d2409563456812718f6130c1164513e7b",
   "command": "PYTHONPATH=. python agmi/full_runner.py --json <out>; python -m agmi.merge_rows results/scorecard.json <out> --labels <row>",
   "runtime": "Darwin x86_64, Python 3.12",
   "attack_versions": {

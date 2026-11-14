@@ -10,7 +10,7 @@ A conformance test suite that measures whether AI agent memory and checkpoint st
   <a href="https://github.com/tech4biz-yasha/agmi/actions/workflows/scorecard.yml"><img src="https://github.com/tech4biz-yasha/agmi/actions/workflows/scorecard.yml/badge.svg" alt="scorecard"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="MIT"></a>
   <img src="https://img.shields.io/badge/python-3.10%2B-blue.svg" alt="python">
-  <img src="https://img.shields.io/badge/stores%20measured-26-green.svg" alt="stores measured">
+  <img src="https://img.shields.io/badge/stores%20measured-27-green.svg" alt="stores measured">
 </p>
 
 [![Method paper DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22995111.svg)](https://doi.org/10.5281/zenodo.22995111)
@@ -23,7 +23,7 @@ A conformance test suite that measures whether AI agent memory and checkpoint st
 
 ## The result in one table
 
-Twenty-six agent memory and checkpoint stores were seeded through their own APIs, edited behind their backs, and asked to read their memory again. The twelve that make no integrity claim, all three official LangGraph checkpointers, Google's managed Memory Bank, the event plane of AWS Bedrock AgentCore Memory and the memory of the OpenClaw and Hermes agents among them, served every applicable edit as genuine. The fourteen that do make a claim were measured against it, and the table shows exactly where each one holds and where it stops. The MythologIQ Agent Memory reference runtime was the first row to refuse all eight record-level edits on the read path; Surgical DevOps G7 is the first to refuse all nine there, including a whole-store rollback.
+Twenty-seven agent memory and checkpoint stores were seeded through their own APIs, edited behind their backs, and asked to read their memory again. The twelve that make no integrity claim, all three official LangGraph checkpointers, Google's managed Memory Bank, the event plane of AWS Bedrock AgentCore Memory and the memory of the OpenClaw and Hermes agents among them, served every applicable edit as genuine. The fifteen that do make a claim were measured against it, and the table shows exactly where each one holds and where it stops. The MythologIQ Agent Memory reference runtime was the first row to refuse all eight record-level edits on the read path; Surgical DevOps G7 is the first to refuse all nine there, including a whole-store rollback.
 
 The ten edits: T1 content tamper, T2 tail truncation, T3 middle deletion, T4 reordering, T5 forged insertion, T6 cross-context replay, T7 rollback replay, T8 metadata tamper, T9 snapshot rollback, which restores an older complete copy of the store after one more genuine record was written through the tool's own API, and T10 erasure resurrection, in which the tool erases through its own API and the attacker restores the pre-erasure copy. T1 to T8 are the edits proposed as the test method for IETF draft-han-bmwg-agent-security-benchmark metric 5.4.7 and defined in draft-khandelwal-bmwg-agent-memory-integrity. T6, T7 and T9 use only bytes the store itself wrote, in the wrong place or at the wrong time; they are the edits that separate encryption from integrity, and T9 is the one that separates a stored head from an anchored one: a head kept beside the records rolls back with them. A store that catches T9 can still miss T10: a ledger of what must be present says nothing about what must be gone, and the LangGraph ledger row shows exactly that. T9 and T10 are measured where the adapter has the hooks; an n/a cell means not measured, not a pass.
 
@@ -60,6 +60,8 @@ The ten edits: T1 content tamper, T2 tail truncation, T3 middle deletion, T4 reo
 | Recallspection ExactMemory, anchor off the store, read path | exactmemory.recallspection 3.2.0 | rejected | rejected | rejected | rejected | rejected | rejected | rejected | rejected | rejected | rejected |
 | HDP token store, content-addressed reference, read path | @helixar_ai/hdp 0.2.2 on Node 22 | rejected | accepted | accepted | rejected | rejected | rejected | rejected | rejected | accepted | n/a |
 | HDP token store, UUID reference, read path | @helixar_ai/hdp 0.2.2 on Node 22 | rejected | accepted | accepted | rejected | rejected | rejected | rejected | rejected | accepted | n/a |
+| Verax memory, keys and memory head inside the state directory (the default), read path | @verax-ai/body 0.8.2 on Node 22 | rejected | rejected | rejected | rejected | rejected | rejected | rejected | rejected | accepted | n/a |
+| Verax memory, keys and memory head outside the state directory, read path | @verax-ai/body 0.8.2 on Node 22 | rejected | rejected | rejected | rejected | rejected | rejected | rejected | rejected | rejected | n/a |
 
 The T6 cell on the inspeximus and Mem0 rows is now measured on a real edit. The inspeximus maintainer found (issue #5) that on those two adapters the edit had been a no-op: the victim pool was read from both contexts, so the donor was copied onto itself, and the earlier claim that a receipt does not bind the owning user rested on that no-op and is withdrawn. His fix (PR #6) scopes the victim pool to the first context; with it, both receipt rows report T6 on audit and Mem0 accepts it. The landed guard (control C3), added when the no-op was found, keeps any future no-op from scoring.
 

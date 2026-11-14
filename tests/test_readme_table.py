@@ -59,6 +59,10 @@ ROWS = {
     "HDP token store, content-addressed reference, read path":
         "hdp-token-content-ref",
     "HDP token store, UUID reference, read path": "hdp-token-uuid",
+    "Verax memory, keys and memory head inside the state directory (the default), read path":
+        "verax-memory",
+    "Verax memory, keys and memory head outside the state directory, read path":
+        "verax-memory+head-outside",
 }
 
 
