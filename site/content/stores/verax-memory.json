@@ -1,0 +1,16 @@
+{
+ "title": "Verax memory",
+ "subtitle": "signing keys and the memory head inside the state directory, the default layout",
+ "label": "verax-memory",
+ "version": "@verax-ai/body 0.8.2",
+ "measured_date": "2026-11-14",
+ "measured_on": "@verax-ai/body 0.8.2 from npm, Node v22.23.5, Python 3.12, macOS, 2026-11-14",
+ "source_url": "https://github.com/verax-ai/verax",
+ "source_label": "github.com/verax-ai/verax",
+ "What this means": "<p>Nothing an attacker does to a single record reaches the agent. Every one of the eight record edits is refused when the agent next reads, because each object carries a hash over its own fields and the order comes from an Ed25519-signed commit chain. What still gets through is putting the whole state directory back to an earlier copy of itself. In the layout Verax ships, the signing keys and the memory head live in <code>keys/</code> inside that directory, so the restored copy is internally consistent and is opened as current; the newest genuine record is gone and no error is raised. Move the keys and the head out of the attacker's reach and the same edit is refused. That is the second row, and it is the same store and the same version.</p>",
+ "Where the attacker stands": "<p>The attacker reads and writes the Verax state directory beneath the MCP server, as a mounted volume, a shared disk or a restored backup would allow. He signs nothing: the Ed25519 keys are not his. An attacker who holds the signing key is a different measurement and this row does not speak for it.</p>",
+ "verdicts_intro": "<p><strong>Detection point:</strong> the read path. 8 of the ten edits were refused there, 1 served as genuine, 1 not applicable.</p><p><strong>Level L3.</strong> <a href=\"../levels/l3.html\">What L3 means</a>.</p>",
+ "reproduce_intro": "Everything runs offline. The run seeds a fresh store, applies each edit beneath the server's own API, reopens the store and records what memory.get returned.",
+ "reproduce": "pip install agent-memory-integrity\nmkdir pin &amp;&amp; cd pin &amp;&amp; npm init -y &amp;&amp; npm install @verax-ai/body@0.8.2 &amp;&amp; cd ..\nexport AGMI_VERAX_DIR=&lt;that pin directory&gt;\npython agmi/full_runner.py --json results/scorecard.json   # every row, this one included\npython -m agmi.agent --target verax-memory --families at-rest",
+ "related": "<li><a href=\"../stores/verax-memory-head-outside.html\">Verax memory, keys and head outside the state directory</a></li><li><a href=\"../stores/recallspection-exact.html\">Recallspection ExactMemory</a></li><li><a href=\"../stores/surgical-devops-g7.html\">Surgical DevOps G7</a></li><li><a href=\"../stores/atmem-chain.html\">AtMem 2.3.8</a></li>"
+}

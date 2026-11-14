@@ -3442,6 +3442,182 @@
         }
       },
       "measured_date": "2026-10-08"
+    },
+    {
+      "label": "verax-memory",
+      "checked_at": "read",
+      "measured_on": "macOS, Python 3.12, Node v22.23.5, @verax-ai/body 0.8.2, 2026-11-14",
+      "cells": {
+        "tamper": {
+          "status": "safe",
+          "verdict": "rejected",
+          "detail": "detected on reload (memory.get a3: memory-integrity-mismatch)"
+        },
+        "truncate": {
+          "status": "safe",
+          "verdict": "rejected",
+          "detail": "detected on reload (memory.get a4: memory-integrity-missing)"
+        },
+        "delete_middle": {
+          "status": "safe",
+          "verdict": "rejected",
+          "detail": "detected on reload (memory.get a3: memory-integrity-missing)"
+        },
+        "reorder": {
+          "status": "safe",
+          "verdict": "rejected",
+          "detail": "detected on reload (memory.get a2: memory-integrity-mismatch)"
+        },
+        "forge": {
+          "status": "safe",
+          "verdict": "rejected",
+          "detail": "detected on reload (memory.get a99: memory-integrity-unattested)"
+        },
+        "cross_replay": {
+          "status": "safe",
+          "verdict": "rejected",
+          "detail": "detected on reload (memory.get a5: memory-integrity-mismatch)"
+        },
+        "rollback_replay": {
+          "status": "safe",
+          "verdict": "rejected",
+          "detail": "detected on reload (memory.get a5: memory-integrity-mismatch)"
+        },
+        "metadata_tamper": {
+          "status": "safe",
+          "verdict": "rejected",
+          "detail": "detected on reload (memory.get a3: memory-integrity-mismatch)"
+        },
+        "snapshot_rollback": {
+          "status": "VULNERABLE",
+          "verdict": "accepted",
+          "detail": "the older copy opened as current; the newest genuine record is gone without an error"
+        },
+        "erase_resurrect": {
+          "status": "n/a",
+          "verdict": "n/a",
+          "detail": "Verax's memory has no erase operation: its memory tools are memory.get and memory.put, and a record is replaced only by a newer revision"
+        },
+        "memory_injection": {
+          "status": "n/a",
+          "verdict": "n/a",
+          "detail": ""
+        },
+        "cross_session_bleed": {
+          "status": "n/a",
+          "verdict": "n/a",
+          "detail": ""
+        },
+        "retrieval_hijack": {
+          "status": "n/a",
+          "verdict": "n/a",
+          "detail": ""
+        },
+        "indirect_prompt_injection": {
+          "status": "n/a",
+          "verdict": "n/a",
+          "detail": ""
+        },
+        "update_poisoning": {
+          "status": "n/a",
+          "verdict": "n/a",
+          "detail": ""
+        },
+        "metadata_poisoning": {
+          "status": "n/a",
+          "verdict": "n/a",
+          "detail": ""
+        }
+      },
+      "measured_date": "2026-11-14"
+    },
+    {
+      "label": "verax-memory+head-outside",
+      "checked_at": "read",
+      "measured_on": "macOS, Python 3.12, Node v22.23.5, @verax-ai/body 0.8.2, 2026-11-14",
+      "cells": {
+        "tamper": {
+          "status": "safe",
+          "verdict": "rejected",
+          "detail": "detected on reload (memory.get a3: memory-integrity-mismatch)"
+        },
+        "truncate": {
+          "status": "safe",
+          "verdict": "rejected",
+          "detail": "detected on reload (memory.get a4: memory-integrity-missing)"
+        },
+        "delete_middle": {
+          "status": "safe",
+          "verdict": "rejected",
+          "detail": "detected on reload (memory.get a3: memory-integrity-missing)"
+        },
+        "reorder": {
+          "status": "safe",
+          "verdict": "rejected",
+          "detail": "detected on reload (memory.get a2: memory-integrity-mismatch)"
+        },
+        "forge": {
+          "status": "safe",
+          "verdict": "rejected",
+          "detail": "detected on reload (memory.get a99: memory-integrity-unattested)"
+        },
+        "cross_replay": {
+          "status": "safe",
+          "verdict": "rejected",
+          "detail": "detected on reload (memory.get a5: memory-integrity-mismatch)"
+        },
+        "rollback_replay": {
+          "status": "safe",
+          "verdict": "rejected",
+          "detail": "detected on reload (memory.get a5: memory-integrity-mismatch)"
+        },
+        "metadata_tamper": {
+          "status": "safe",
+          "verdict": "rejected",
+          "detail": "detected on reload (memory.get a3: memory-integrity-mismatch)"
+        },
+        "snapshot_rollback": {
+          "status": "safe",
+          "verdict": "rejected",
+          "detail": "the store noticed it was older than its last committed state (memory.get a1: memory-integrity-history-unavailable)"
+        },
+        "erase_resurrect": {
+          "status": "n/a",
+          "verdict": "n/a",
+          "detail": "Verax's memory has no erase operation: its memory tools are memory.get and memory.put, and a record is replaced only by a newer revision"
+        },
+        "memory_injection": {
+          "status": "n/a",
+          "verdict": "n/a",
+          "detail": ""
+        },
+        "cross_session_bleed": {
+          "status": "n/a",
+          "verdict": "n/a",
+          "detail": ""
+        },
+        "retrieval_hijack": {
+          "status": "n/a",
+          "verdict": "n/a",
+          "detail": ""
+        },
+        "indirect_prompt_injection": {
+          "status": "n/a",
+          "verdict": "n/a",
+          "detail": ""
+        },
+        "update_poisoning": {
+          "status": "n/a",
+          "verdict": "n/a",
+          "detail": ""
+        },
+        "metadata_poisoning": {
+          "status": "n/a",
+          "verdict": "n/a",
+          "detail": ""
+        }
+      },
+      "measured_date": "2026-11-14"
     }
   ]
 }
