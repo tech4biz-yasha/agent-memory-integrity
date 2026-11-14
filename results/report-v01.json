@@ -1,8 +1,8 @@
 {
   "check-set": {
     "digest-encoding": "jcs-sha256",
-    "leaf-count": 624,
-    "sha256": "4b62e8f1fb2989977a26552b6284ede658724675bcaa300ffb645511cded74ae",
+    "leaf-count": 656,
+    "sha256": "7d4003c077c073b6c11c2e0586a65f8c29a73e1601588dfd94181718ab0077fa",
     "tree-shape": "flat"
   },
   "checks": [
@@ -13027,6 +13027,700 @@
       },
       "check": "surgical-devops-g7/metadata_poisoning@v1",
       "state": "not-exercised"
+    },
+    {
+      "annotations": {
+        "attack-version": 1,
+        "attacker": "store-access",
+        "checked-at": "read",
+        "detail": "detected on reload (memory.get a3: memory-integrity-mismatch)",
+        "detection": "read",
+        "edit": "tamper",
+        "edit-name": "T1",
+        "measured-on": "macOS, Python 3.12, Node v22.23.5, @verax-ai/body 0.8.2, 2026-11-14",
+        "status": "safe",
+        "store": "verax-memory",
+        "verdict": "rejected"
+      },
+      "check": "verax-memory/tamper@v1",
+      "discrimination": {
+        "value": "unknown"
+      },
+      "other-verdict": {
+        "value": "unknown"
+      },
+      "state": "pass"
+    },
+    {
+      "annotations": {
+        "attack-version": 1,
+        "attacker": "store-access",
+        "checked-at": "read",
+        "detail": "detected on reload (memory.get a4: memory-integrity-missing)",
+        "detection": "read",
+        "edit": "truncate",
+        "edit-name": "T2",
+        "measured-on": "macOS, Python 3.12, Node v22.23.5, @verax-ai/body 0.8.2, 2026-11-14",
+        "status": "safe",
+        "store": "verax-memory",
+        "verdict": "rejected"
+      },
+      "check": "verax-memory/truncate@v1",
+      "discrimination": {
+        "value": "unknown"
+      },
+      "other-verdict": {
+        "value": "unknown"
+      },
+      "state": "pass"
+    },
+    {
+      "annotations": {
+        "attack-version": 1,
+        "attacker": "store-access",
+        "checked-at": "read",
+        "detail": "detected on reload (memory.get a3: memory-integrity-missing)",
+        "detection": "read",
+        "edit": "delete_middle",
+        "edit-name": "T3",
+        "measured-on": "macOS, Python 3.12, Node v22.23.5, @verax-ai/body 0.8.2, 2026-11-14",
+        "status": "safe",
+        "store": "verax-memory",
+        "verdict": "rejected"
+      },
+      "check": "verax-memory/delete_middle@v1",
+      "discrimination": {
+        "value": "unknown"
+      },
+      "other-verdict": {
+        "value": "unknown"
+      },
+      "state": "pass"
+    },
+    {
+      "annotations": {
+        "attack-version": 1,
+        "attacker": "store-access",
+        "checked-at": "read",
+        "detail": "detected on reload (memory.get a2: memory-integrity-mismatch)",
+        "detection": "read",
+        "edit": "reorder",
+        "edit-name": "T4",
+        "measured-on": "macOS, Python 3.12, Node v22.23.5, @verax-ai/body 0.8.2, 2026-11-14",
+        "status": "safe",
+        "store": "verax-memory",
+        "verdict": "rejected"
+      },
+      "check": "verax-memory/reorder@v1",
+      "discrimination": {
+        "value": "unknown"
+      },
+      "other-verdict": {
+        "value": "unknown"
+      },
+      "state": "pass"
+    },
+    {
+      "annotations": {
+        "attack-version": 1,
+        "attacker": "store-access",
+        "checked-at": "read",
+        "detail": "detected on reload (memory.get a99: memory-integrity-unattested)",
+        "detection": "read",
+        "edit": "forge",
+        "edit-name": "T5",
+        "measured-on": "macOS, Python 3.12, Node v22.23.5, @verax-ai/body 0.8.2, 2026-11-14",
+        "status": "safe",
+        "store": "verax-memory",
+        "verdict": "rejected"
+      },
+      "check": "verax-memory/forge@v1",
+      "discrimination": {
+        "value": "unknown"
+      },
+      "other-verdict": {
+        "value": "unknown"
+      },
+      "state": "pass"
+    },
+    {
+      "annotations": {
+        "attack-version": 1,
+        "attacker": "store-access",
+        "checked-at": "read",
+        "detail": "detected on reload (memory.get a5: memory-integrity-mismatch)",
+        "detection": "read",
+        "edit": "cross_replay",
+        "edit-name": "T6",
+        "measured-on": "macOS, Python 3.12, Node v22.23.5, @verax-ai/body 0.8.2, 2026-11-14",
+        "status": "safe",
+        "store": "verax-memory",
+        "verdict": "rejected"
+      },
+      "check": "verax-memory/cross_replay@v1",
+      "discrimination": {
+        "value": "unknown"
+      },
+      "other-verdict": {
+        "value": "unknown"
+      },
+      "state": "pass"
+    },
+    {
+      "annotations": {
+        "attack-version": 1,
+        "attacker": "store-access",
+        "checked-at": "read",
+        "detail": "detected on reload (memory.get a5: memory-integrity-mismatch)",
+        "detection": "read",
+        "edit": "rollback_replay",
+        "edit-name": "T7",
+        "measured-on": "macOS, Python 3.12, Node v22.23.5, @verax-ai/body 0.8.2, 2026-11-14",
+        "status": "safe",
+        "store": "verax-memory",
+        "verdict": "rejected"
+      },
+      "check": "verax-memory/rollback_replay@v1",
+      "discrimination": {
+        "value": "unknown"
+      },
+      "other-verdict": {
+        "value": "unknown"
+      },
+      "state": "pass"
+    },
+    {
+      "annotations": {
+        "attack-version": 1,
+        "attacker": "store-access",
+        "checked-at": "read",
+        "detail": "detected on reload (memory.get a3: memory-integrity-mismatch)",
+        "detection": "read",
+        "edit": "metadata_tamper",
+        "edit-name": "T8",
+        "measured-on": "macOS, Python 3.12, Node v22.23.5, @verax-ai/body 0.8.2, 2026-11-14",
+        "status": "safe",
+        "store": "verax-memory",
+        "verdict": "rejected"
+      },
+      "check": "verax-memory/metadata_tamper@v1",
+      "discrimination": {
+        "value": "unknown"
+      },
+      "other-verdict": {
+        "value": "unknown"
+      },
+      "state": "pass"
+    },
+    {
+      "annotations": {
+        "attack-version": 1,
+        "attacker": "store-access",
+        "checked-at": "read",
+        "detail": "the older copy opened as current; the newest genuine record is gone without an error",
+        "detection": "none",
+        "edit": "snapshot_rollback",
+        "edit-name": "T9",
+        "measured-on": "macOS, Python 3.12, Node v22.23.5, @verax-ai/body 0.8.2, 2026-11-14",
+        "status": "VULNERABLE",
+        "store": "verax-memory",
+        "verdict": "accepted"
+      },
+      "check": "verax-memory/snapshot_rollback@v1",
+      "discrimination": {
+        "value": "unknown"
+      },
+      "other-verdict": {
+        "value": "unknown"
+      },
+      "state": "fail"
+    },
+    {
+      "annotations": {
+        "attack-version": 1,
+        "attacker": "store-access",
+        "checked-at": "read",
+        "detail": "Verax's memory has no erase operation: its memory tools are memory.get and memory.put, and a record is replaced only by a newer revision",
+        "edit": "erase_resurrect",
+        "edit-name": "T10",
+        "measured-on": "macOS, Python 3.12, Node v22.23.5, @verax-ai/body 0.8.2, 2026-11-14",
+        "status": "n/a",
+        "store": "verax-memory",
+        "verdict": "n/a"
+      },
+      "cause": {
+        "code": "unsupported_input",
+        "detail": "Verax's memory has no erase operation: its memory tools are memory.get and memory.put, and a record is replaced only by a newer revision"
+      },
+      "check": "verax-memory/erase_resurrect@v1",
+      "state": "not-exercised"
+    },
+    {
+      "annotations": {
+        "attack-version": 3,
+        "attacker": "write-access",
+        "checked-at": "read",
+        "detail": "",
+        "edit": "memory_injection",
+        "edit-name": "W1",
+        "measured-on": "macOS, Python 3.12, Node v22.23.5, @verax-ai/body 0.8.2, 2026-11-14",
+        "status": "n/a",
+        "store": "verax-memory",
+        "verdict": "n/a"
+      },
+      "cause": {
+        "code": "not_applicable",
+        "detail": "this edit belongs to the write-access attacker; the row is measured under the store-access attacker"
+      },
+      "check": "verax-memory/memory_injection@v3",
+      "state": "not-exercised"
+    },
+    {
+      "annotations": {
+        "attack-version": 2,
+        "attacker": "write-access",
+        "checked-at": "read",
+        "detail": "",
+        "edit": "cross_session_bleed",
+        "edit-name": "W2",
+        "measured-on": "macOS, Python 3.12, Node v22.23.5, @verax-ai/body 0.8.2, 2026-11-14",
+        "status": "n/a",
+        "store": "verax-memory",
+        "verdict": "n/a"
+      },
+      "cause": {
+        "code": "not_applicable",
+        "detail": "this edit belongs to the write-access attacker; the row is measured under the store-access attacker"
+      },
+      "check": "verax-memory/cross_session_bleed@v2",
+      "state": "not-exercised"
+    },
+    {
+      "annotations": {
+        "attack-version": 4,
+        "attacker": "write-access",
+        "checked-at": "read",
+        "detail": "",
+        "edit": "retrieval_hijack",
+        "edit-name": "W3",
+        "measured-on": "macOS, Python 3.12, Node v22.23.5, @verax-ai/body 0.8.2, 2026-11-14",
+        "status": "n/a",
+        "store": "verax-memory",
+        "verdict": "n/a"
+      },
+      "cause": {
+        "code": "not_applicable",
+        "detail": "this edit belongs to the write-access attacker; the row is measured under the store-access attacker"
+      },
+      "check": "verax-memory/retrieval_hijack@v4",
+      "state": "not-exercised"
+    },
+    {
+      "annotations": {
+        "attack-version": 3,
+        "attacker": "write-access",
+        "checked-at": "read",
+        "detail": "",
+        "edit": "indirect_prompt_injection",
+        "edit-name": "W4",
+        "measured-on": "macOS, Python 3.12, Node v22.23.5, @verax-ai/body 0.8.2, 2026-11-14",
+        "status": "n/a",
+        "store": "verax-memory",
+        "verdict": "n/a"
+      },
+      "cause": {
+        "code": "not_applicable",
+        "detail": "this edit belongs to the write-access attacker; the row is measured under the store-access attacker"
+      },
+      "check": "verax-memory/indirect_prompt_injection@v3",
+      "state": "not-exercised"
+    },
+    {
+      "annotations": {
+        "attack-version": 1,
+        "attacker": "write-access",
+        "checked-at": "read",
+        "detail": "",
+        "edit": "update_poisoning",
+        "edit-name": "W5",
+        "measured-on": "macOS, Python 3.12, Node v22.23.5, @verax-ai/body 0.8.2, 2026-11-14",
+        "status": "n/a",
+        "store": "verax-memory",
+        "verdict": "n/a"
+      },
+      "cause": {
+        "code": "not_applicable",
+        "detail": "this edit belongs to the write-access attacker; the row is measured under the store-access attacker"
+      },
+      "check": "verax-memory/update_poisoning@v1",
+      "state": "not-exercised"
+    },
+    {
+      "annotations": {
+        "attack-version": 1,
+        "attacker": "write-access",
+        "checked-at": "read",
+        "detail": "",
+        "edit": "metadata_poisoning",
+        "edit-name": "W6",
+        "measured-on": "macOS, Python 3.12, Node v22.23.5, @verax-ai/body 0.8.2, 2026-11-14",
+        "status": "n/a",
+        "store": "verax-memory",
+        "verdict": "n/a"
+      },
+      "cause": {
+        "code": "not_applicable",
+        "detail": "this edit belongs to the write-access attacker; the row is measured under the store-access attacker"
+      },
+      "check": "verax-memory/metadata_poisoning@v1",
+      "state": "not-exercised"
+    },
+    {
+      "annotations": {
+        "attack-version": 1,
+        "attacker": "store-access",
+        "checked-at": "read",
+        "detail": "detected on reload (memory.get a3: memory-integrity-mismatch)",
+        "detection": "read",
+        "edit": "tamper",
+        "edit-name": "T1",
+        "measured-on": "macOS, Python 3.12, Node v22.23.5, @verax-ai/body 0.8.2, 2026-11-14",
+        "status": "safe",
+        "store": "verax-memory+head-outside",
+        "verdict": "rejected"
+      },
+      "check": "verax-memory+head-outside/tamper@v1",
+      "discrimination": {
+        "value": "unknown"
+      },
+      "other-verdict": {
+        "value": "unknown"
+      },
+      "state": "pass"
+    },
+    {
+      "annotations": {
+        "attack-version": 1,
+        "attacker": "store-access",
+        "checked-at": "read",
+        "detail": "detected on reload (memory.get a4: memory-integrity-missing)",
+        "detection": "read",
+        "edit": "truncate",
+        "edit-name": "T2",
+        "measured-on": "macOS, Python 3.12, Node v22.23.5, @verax-ai/body 0.8.2, 2026-11-14",
+        "status": "safe",
+        "store": "verax-memory+head-outside",
+        "verdict": "rejected"
+      },
+      "check": "verax-memory+head-outside/truncate@v1",
+      "discrimination": {
+        "value": "unknown"
+      },
+      "other-verdict": {
+        "value": "unknown"
+      },
+      "state": "pass"
+    },
+    {
+      "annotations": {
+        "attack-version": 1,
+        "attacker": "store-access",
+        "checked-at": "read",
+        "detail": "detected on reload (memory.get a3: memory-integrity-missing)",
+        "detection": "read",
+        "edit": "delete_middle",
+        "edit-name": "T3",
+        "measured-on": "macOS, Python 3.12, Node v22.23.5, @verax-ai/body 0.8.2, 2026-11-14",
+        "status": "safe",
+        "store": "verax-memory+head-outside",
+        "verdict": "rejected"
+      },
+      "check": "verax-memory+head-outside/delete_middle@v1",
+      "discrimination": {
+        "value": "unknown"
+      },
+      "other-verdict": {
+        "value": "unknown"
+      },
+      "state": "pass"
+    },
+    {
+      "annotations": {
+        "attack-version": 1,
+        "attacker": "store-access",
+        "checked-at": "read",
+        "detail": "detected on reload (memory.get a2: memory-integrity-mismatch)",
+        "detection": "read",
+        "edit": "reorder",
+        "edit-name": "T4",
+        "measured-on": "macOS, Python 3.12, Node v22.23.5, @verax-ai/body 0.8.2, 2026-11-14",
+        "status": "safe",
+        "store": "verax-memory+head-outside",
+        "verdict": "rejected"
+      },
+      "check": "verax-memory+head-outside/reorder@v1",
+      "discrimination": {
+        "value": "unknown"
+      },
+      "other-verdict": {
+        "value": "unknown"
+      },
+      "state": "pass"
+    },
+    {
+      "annotations": {
+        "attack-version": 1,
+        "attacker": "store-access",
+        "checked-at": "read",
+        "detail": "detected on reload (memory.get a99: memory-integrity-unattested)",
+        "detection": "read",
+        "edit": "forge",
+        "edit-name": "T5",
+        "measured-on": "macOS, Python 3.12, Node v22.23.5, @verax-ai/body 0.8.2, 2026-11-14",
+        "status": "safe",
+        "store": "verax-memory+head-outside",
+        "verdict": "rejected"
+      },
+      "check": "verax-memory+head-outside/forge@v1",
+      "discrimination": {
+        "value": "unknown"
+      },
+      "other-verdict": {
+        "value": "unknown"
+      },
+      "state": "pass"
+    },
+    {
+      "annotations": {
+        "attack-version": 1,
+        "attacker": "store-access",
+        "checked-at": "read",
+        "detail": "detected on reload (memory.get a5: memory-integrity-mismatch)",
+        "detection": "read",
+        "edit": "cross_replay",
+        "edit-name": "T6",
+        "measured-on": "macOS, Python 3.12, Node v22.23.5, @verax-ai/body 0.8.2, 2026-11-14",
+        "status": "safe",
+        "store": "verax-memory+head-outside",
+        "verdict": "rejected"
+      },
+      "check": "verax-memory+head-outside/cross_replay@v1",
+      "discrimination": {
+        "value": "unknown"
+      },
+      "other-verdict": {
+        "value": "unknown"
+      },
+      "state": "pass"
+    },
+    {
+      "annotations": {
+        "attack-version": 1,
+        "attacker": "store-access",
+        "checked-at": "read",
+        "detail": "detected on reload (memory.get a5: memory-integrity-mismatch)",
+        "detection": "read",
+        "edit": "rollback_replay",
+        "edit-name": "T7",
+        "measured-on": "macOS, Python 3.12, Node v22.23.5, @verax-ai/body 0.8.2, 2026-11-14",
+        "status": "safe",
+        "store": "verax-memory+head-outside",
+        "verdict": "rejected"
+      },
+      "check": "verax-memory+head-outside/rollback_replay@v1",
+      "discrimination": {
+        "value": "unknown"
+      },
+      "other-verdict": {
+        "value": "unknown"
+      },
+      "state": "pass"
+    },
+    {
+      "annotations": {
+        "attack-version": 1,
+        "attacker": "store-access",
+        "checked-at": "read",
+        "detail": "detected on reload (memory.get a3: memory-integrity-mismatch)",
+        "detection": "read",
+        "edit": "metadata_tamper",
+        "edit-name": "T8",
+        "measured-on": "macOS, Python 3.12, Node v22.23.5, @verax-ai/body 0.8.2, 2026-11-14",
+        "status": "safe",
+        "store": "verax-memory+head-outside",
+        "verdict": "rejected"
+      },
+      "check": "verax-memory+head-outside/metadata_tamper@v1",
+      "discrimination": {
+        "value": "unknown"
+      },
+      "other-verdict": {
+        "value": "unknown"
+      },
+      "state": "pass"
+    },
+    {
+      "annotations": {
+        "attack-version": 1,
+        "attacker": "store-access",
+        "checked-at": "read",
+        "detail": "the store noticed it was older than its last committed state (memory.get a1: memory-integrity-history-unavailable)",
+        "detection": "read",
+        "edit": "snapshot_rollback",
+        "edit-name": "T9",
+        "measured-on": "macOS, Python 3.12, Node v22.23.5, @verax-ai/body 0.8.2, 2026-11-14",
+        "status": "safe",
+        "store": "verax-memory+head-outside",
+        "verdict": "rejected"
+      },
+      "check": "verax-memory+head-outside/snapshot_rollback@v1",
+      "discrimination": {
+        "value": "unknown"
+      },
+      "other-verdict": {
+        "value": "unknown"
+      },
+      "state": "pass"
+    },
+    {
+      "annotations": {
+        "attack-version": 1,
+        "attacker": "store-access",
+        "checked-at": "read",
+        "detail": "Verax's memory has no erase operation: its memory tools are memory.get and memory.put, and a record is replaced only by a newer revision",
+        "edit": "erase_resurrect",
+        "edit-name": "T10",
+        "measured-on": "macOS, Python 3.12, Node v22.23.5, @verax-ai/body 0.8.2, 2026-11-14",
+        "status": "n/a",
+        "store": "verax-memory+head-outside",
+        "verdict": "n/a"
+      },
+      "cause": {
+        "code": "unsupported_input",
+        "detail": "Verax's memory has no erase operation: its memory tools are memory.get and memory.put, and a record is replaced only by a newer revision"
+      },
+      "check": "verax-memory+head-outside/erase_resurrect@v1",
+      "state": "not-exercised"
+    },
+    {
+      "annotations": {
+        "attack-version": 3,
+        "attacker": "write-access",
+        "checked-at": "read",
+        "detail": "",
+        "edit": "memory_injection",
+        "edit-name": "W1",
+        "measured-on": "macOS, Python 3.12, Node v22.23.5, @verax-ai/body 0.8.2, 2026-11-14",
+        "status": "n/a",
+        "store": "verax-memory+head-outside",
+        "verdict": "n/a"
+      },
+      "cause": {
+        "code": "not_applicable",
+        "detail": "this edit belongs to the write-access attacker; the row is measured under the store-access attacker"
+      },
+      "check": "verax-memory+head-outside/memory_injection@v3",
+      "state": "not-exercised"
+    },
+    {
+      "annotations": {
+        "attack-version": 2,
+        "attacker": "write-access",
+        "checked-at": "read",
+        "detail": "",
+        "edit": "cross_session_bleed",
+        "edit-name": "W2",
+        "measured-on": "macOS, Python 3.12, Node v22.23.5, @verax-ai/body 0.8.2, 2026-11-14",
+        "status": "n/a",
+        "store": "verax-memory+head-outside",
+        "verdict": "n/a"
+      },
+      "cause": {
+        "code": "not_applicable",
+        "detail": "this edit belongs to the write-access attacker; the row is measured under the store-access attacker"
+      },
+      "check": "verax-memory+head-outside/cross_session_bleed@v2",
+      "state": "not-exercised"
+    },
+    {
+      "annotations": {
+        "attack-version": 4,
+        "attacker": "write-access",
+        "checked-at": "read",
+        "detail": "",
+        "edit": "retrieval_hijack",
+        "edit-name": "W3",
+        "measured-on": "macOS, Python 3.12, Node v22.23.5, @verax-ai/body 0.8.2, 2026-11-14",
+        "status": "n/a",
+        "store": "verax-memory+head-outside",
+        "verdict": "n/a"
+      },
+      "cause": {
+        "code": "not_applicable",
+        "detail": "this edit belongs to the write-access attacker; the row is measured under the store-access attacker"
+      },
+      "check": "verax-memory+head-outside/retrieval_hijack@v4",
+      "state": "not-exercised"
+    },
+    {
+      "annotations": {
+        "attack-version": 3,
+        "attacker": "write-access",
+        "checked-at": "read",
+        "detail": "",
+        "edit": "indirect_prompt_injection",
+        "edit-name": "W4",
+        "measured-on": "macOS, Python 3.12, Node v22.23.5, @verax-ai/body 0.8.2, 2026-11-14",
+        "status": "n/a",
+        "store": "verax-memory+head-outside",
+        "verdict": "n/a"
+      },
+      "cause": {
+        "code": "not_applicable",
+        "detail": "this edit belongs to the write-access attacker; the row is measured under the store-access attacker"
+      },
+      "check": "verax-memory+head-outside/indirect_prompt_injection@v3",
+      "state": "not-exercised"
+    },
+    {
+      "annotations": {
+        "attack-version": 1,
+        "attacker": "write-access",
+        "checked-at": "read",
+        "detail": "",
+        "edit": "update_poisoning",
+        "edit-name": "W5",
+        "measured-on": "macOS, Python 3.12, Node v22.23.5, @verax-ai/body 0.8.2, 2026-11-14",
+        "status": "n/a",
+        "store": "verax-memory+head-outside",
+        "verdict": "n/a"
+      },
+      "cause": {
+        "code": "not_applicable",
+        "detail": "this edit belongs to the write-access attacker; the row is measured under the store-access attacker"
+      },
+      "check": "verax-memory+head-outside/update_poisoning@v1",
+      "state": "not-exercised"
+    },
+    {
+      "annotations": {
+        "attack-version": 1,
+        "attacker": "write-access",
+        "checked-at": "read",
+        "detail": "",
+        "edit": "metadata_poisoning",
+        "edit-name": "W6",
+        "measured-on": "macOS, Python 3.12, Node v22.23.5, @verax-ai/body 0.8.2, 2026-11-14",
+        "status": "n/a",
+        "store": "verax-memory+head-outside",
+        "verdict": "n/a"
+      },
+      "cause": {
+        "code": "not_applicable",
+        "detail": "this edit belongs to the write-access attacker; the row is measured under the store-access attacker"
+      },
+      "check": "verax-memory+head-outside/metadata_poisoning@v1",
+      "state": "not-exercised"
     }
   ],
   "crosswalk": {
@@ -13092,30 +13786,30 @@
     "completeness": {
       "accounting": {
         "claim": "satisfied",
-        "population": 624
+        "population": 656
       },
       "evidence": {
         "claim": "not-satisfied",
-        "population": 330
+        "population": 348
       },
       "execution": {
         "claim": "not-satisfied",
-        "population": 624
+        "population": 656
       },
       "no-void": {
         "claim": "satisfied",
-        "population": 624
+        "population": 656
       }
     },
-    "declared": 624,
-    "exercised": 330,
-    "fail": 266,
+    "declared": 656,
+    "exercised": 348,
+    "fail": 267,
     "inconclusive": 0,
     "negative-capable": {
       "kind": "shown-by-run"
     },
-    "not-exercised": 294,
-    "pass": 64,
+    "not-exercised": 308,
+    "pass": 81,
     "referenced": 0,
     "void": 0
   },
@@ -13124,8 +13818,8 @@
     "edits": 16,
     "platform": "Darwin x86_64, Python 3.12",
     "results-file": "results/scorecard.json",
-    "results-sha256": "8ca4e4c9017180e4a9f28a9c4c4e18cb586498cb3fd428b25c0a5d441060e749",
-    "rows": 39,
+    "results-sha256": "41176fef49b3d5b0753036dbd12208d6894dbf6a97eff09a6723756fca52982e",
+    "rows": 41,
     "suite": "agmi"
   }
 }
