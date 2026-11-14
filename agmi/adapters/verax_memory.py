@@ -9,8 +9,9 @@ call passes Verax's policy gate and leaves a signed decision record.
 
 The store is the state directory. One record is one memory item under its id:
 the object file `tenants/<tenantKey>/memory/<id>/<revision>.json`, which holds
-the content, its source and validity window, and an unkeyed SHA-256 over them
-(`versionHash`). Beside the objects the store keeps `memory-commits.jsonl`, one
+the content, its source and validity window, and `versionHash`, an unkeyed
+SHA-256 over the tenant key, id, revision, content, source and validity window.
+Beside the objects the store keeps `memory-commits.jsonl`, one
 Ed25519-signed line per write chained by hash, and a signed memory head that
 names the chain's last line. The tenant key is the SHA-256 of the token's issuer
 and subject, so the two contexts here are two agents with two subjects.
@@ -24,19 +25,26 @@ Read path: `memory.get` over MCP. `verify()` starts one fresh Node process per
 context; it starts the body with `listen` from the published package, reads the
 ids of that context, and stops, so nothing in memory survives from before the
 edit. `verify()` reads every id the
-agent wrote through `memory.put` and every id present in the raw store. A read
-that returns a `memory-integrity-*` error, or a deny because the body halted
-after one, is a refusal. A record present in the raw store that the read path
-does not serve is a refusal in the store's own terms: it has no signed commit,
-so Verax answers that it does not exist. An id the agent wrote that the store
-answers as never written is not a refusal: that is the store opening an older
-state as current.
+agent wrote through `memory.put` and every id present in the raw store. A
+JSON-RPC error, or an error answer from `memory.get` other than not found, is a
+refusal; the adapter does not check which error it is. The ones expected are a
+`memory-integrity-*` code and a deny because the body halted after one. An id
+that is on disk and that Verax answers as not found also counts as a refusal:
+that is the adapter's reading, a record the store holds and will not serve. In
+0.8.2 no measured cell rests on that rule; the forged object of T5, for one, is
+answered `memory-integrity-unattested`. An id the agent wrote that is no longer
+on disk, and that the store answers as never written, is not a refusal: that is
+the store opening an older state as current.
 
-The order the read path uses is the signed commit chain, so the raw records are
-listed in commit order. The adapter reads `memory-commits.jsonl` and does not
-write it. T8 as agmi runs it adds a field to the object file; Verax accepts an
-object file with its closed set of keys and nothing else, so the read answers
-mismatch. That run does not change `source` or the validity window.
+The raw records are listed in the order of the signed commit chain, which the
+adapter reads from `memory-commits.jsonl`. The record-level edits leave that
+file untouched; T9 restores an older copy of the whole state directory, and the
+chain file goes back with it. So T4 as this adapter runs it swaps the contents
+of two object files and leaves the chain alone: the `reorder` cell is a content
+swap, refused by the id and `versionHash` check, not a reorder of the signed
+commit chain. T8 as agmi runs it adds a field to the object file; Verax accepts
+an object file with its closed set of keys and nothing else, so the read
+answers mismatch. That run does not change `source` or the validity window.
 
 Two rows, because one deployment choice changes T9. By default the signing keys
 and the memory head live in `keys/` inside the state directory, so a restored
