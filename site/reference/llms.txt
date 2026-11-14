@@ -42,6 +42,8 @@
 - [AtMem 2.3.8, audit chain with an external checkpoint outside the attacker-controlled store directory, verify() audit](https://agentmemoryintegrity.org/stores/atmem-chain-checkpoint.html): atmem 2.3.8; 0 served, 9 reported, 0 rejected, detection on audit, level L0
 - [Agent Memory reference runtime, SQLite canonical substrate, bucketed row digests, fail-closed open](https://agentmemoryintegrity.org/stores/agent-memory.html): agent-memory-reference 0.2.0 (f2aef57); 1 served, 0 reported, 8 rejected, detection on read, level L3
 - [Surgical DevOps G7, signed envelopes bound to their storage position, with an independent witness](https://agentmemoryintegrity.org/stores/surgical-devops-g7.html): surgical-dev-ops 2.6.0-rc.6 on Node v24.18.0; 0 served, 0 reported, 9 rejected, detection on read, level L4
+- [Verax memory, signing keys and the memory head inside the state directory, the default layout](https://agentmemoryintegrity.org/stores/verax-memory.html): @verax-ai/body 0.8.2; 1 served, 0 reported, 8 rejected, detection on read, level L3
+- [Verax memory, head outside, signing keys and the memory head outside the state directory, set with VERAX_KEYS_DIR](https://agentmemoryintegrity.org/stores/verax-memory-head-outside.html): @verax-ai/body 0.8.2; 0 served, 0 reported, 9 rejected, detection on read, level L4
 
 ## Edits and attacks
 - [T1 Content tamper](https://agentmemoryintegrity.org/edits/tamper.html): Change the text inside one existing record, keeping its encoding intact.

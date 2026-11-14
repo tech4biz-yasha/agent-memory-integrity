@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Verax memory: signing keys and the memory head inside the state directory, the default layout, tamper evidence measured | agmi</title>
+<meta name="description" content="Verax memory, signing keys and the memory head inside the state directory, the default layout against ten storage-level edits (T1 to T10): 1 served, 0…">
+<link rel="canonical" href="https://agentmemoryintegrity.org/stores/verax-memory.html">
+<meta name="theme-color" content="#F7F8F6" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#14212B" media="(prefers-color-scheme: dark)">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="agmi, Agent Memory Integrity">
+<meta property="og:title" content="Verax memory: signing keys and the memory head inside the state directory, the default layout, tamper evidence measured">
+<meta property="og:description" content="Verax memory, signing keys and the memory head inside the state directory, the default layout against ten storage-level edits (T1 to T10): 1 served, 0…">
+<meta property="og:url" content="https://agentmemoryintegrity.org/stores/verax-memory.html">
+<meta property="og:image" content="https://agentmemoryintegrity.org/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Verax memory: signing keys and the memory head inside the state directory, the default layout, tamper evidence measured">
+<meta name="twitter:description" content="Verax memory, signing keys and the memory head inside the state directory, the default layout against ten storage-level edits (T1 to T10): 1 served, 0…">
+<meta name="twitter:image" content="https://agentmemoryintegrity.org/og.png">
+
+<link rel="icon" href="../logo.svg" type="image/svg+xml">
+<link rel="alternate" type="application/rss+xml" title="agmi findings" href="../feed.xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+<link rel="stylesheet" href="../site.css?v=0.6.3">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "agmi", "item": "https://agentmemoryintegrity.org/"}, {"@type": "ListItem", "position": 2, "name": "Stores", "item": "https://agentmemoryintegrity.org/stores/"}, {"@type": "ListItem", "position": 3, "name": "Verax memory", "item": "https://agentmemoryintegrity.org/stores/verax-memory.html"}]}</script><script type="application/ld+json">{"@context": "https://schema.org", "@type": "Dataset", "name": "agmi scorecard row: Verax memory, signing keys and the memory head inside the state directory, the default layout", "description": "Verax memory, signing keys and the memory head inside the state directory, the default layout against ten storage-level edits (T1 to T10): 1 served, 0 reported, 8 rejected. Detection point: read. Level L3. Measured on @verax-ai/body 0.8.2 by agmi.", "url": "https://agentmemoryintegrity.org/stores/verax-memory.html", "dateModified": "2026-11-14", "license": "https://opensource.org/licenses/MIT", "creator": {"@type": "Person", "name": "Yasha Khandelwal", "email": "yasha.khandelwal@tech4biz.io"}, "isPartOf": {"@type": "Dataset", "name": "agmi agent memory integrity scorecard", "url": "https://agentmemoryintegrity.org/scorecard.html"}, "variableMeasured": ["T1, Content tamper", "T2, Tail truncation", "T3, Middle deletion", "T4, Reordering", "T5, Forged insertion", "T6, Cross-context replay", "T7, Rollback replay", "T8, Metadata tamper", "T9, Snapshot rollback"], "distribution": {"@type": "DataDownload", "encodingFormat": "application/json", "contentUrl": "https://github.com/tech4biz-yasha/agmi/blob/main/results/scorecard.json"}}</script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="top">
+  <a class="brand" href="../index.html"><img src="../logo.svg" alt="" width="28" height="28"><span>agmi</span><small>Agent Memory Integrity</small></a>
+  <nav class="nav" aria-label="Primary"><a href="../scorecard.html">Scorecard</a><a href="../stores/index.html" aria-current=page>Stores</a><a href="../edits/index.html">Edits</a><a href="../levels/index.html">Levels</a><a href="../agent.html">Memory agent</a><a href="../findings/index.html">Findings</a><a href="../method.html">Method</a><a href="../run.html">Run it</a><details class="more"><summary>More</summary><div><a href="../architecture.html">Architecture</a><a href="../ecosystem.html">Ecosystem</a><a href="../cite.html">Cite</a><a href="../about.html">About</a></div></details></nav>
+  <a class="gh" href="https://github.com/tech4biz-yasha/agmi">GitHub</a>
+</header>
+<main id="main">
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">agmi</a> / <a href="../stores/index.html">Stores</a> / <span>Verax memory</span></nav>
+
+<article class="store">
+<header class="pagehead">
+  <p class="kicker">Store, measured at rest</p>
+  <h1>Verax memory</h1>
+  <p class="subtitle">signing keys and the memory head inside the state directory, the default layout</p>
+  <p class="lede">Verax memory was seeded through its own API and edited behind its back ten ways. 1 edit served as genuine, 0 reported on audit, 8 rejected on read, 1 not applicable.</p>
+  <div class="miniboard" aria-label="Verdicts at a glance"><a class="mini v-rej" href="../edits/tamper.html" title="Content tamper: rejected" style="--i:0"><span class="mono">T1</span><span>rejected</span></a><a class="mini v-rej" href="../edits/truncate.html" title="Tail truncation: rejected" style="--i:1"><span class="mono">T2</span><span>rejected</span></a><a class="mini v-rej" href="../edits/delete-middle.html" title="Middle deletion: rejected" style="--i:2"><span class="mono">T3</span><span>rejected</span></a><a class="mini v-rej" href="../edits/reorder.html" title="Reordering: rejected" style="--i:3"><span class="mono">T4</span><span>rejected</span></a><a class="mini v-rej" href="../edits/forge.html" title="Forged insertion: rejected" style="--i:4"><span class="mono">T5</span><span>rejected</span></a><a class="mini v-rej" href="../edits/cross-replay.html" title="Cross-context replay: rejected" style="--i:5"><span class="mono">T6</span><span>rejected</span></a><a class="mini v-rej" href="../edits/rollback-replay.html" title="Rollback replay: rejected" style="--i:6"><span class="mono">T7</span><span>rejected</span></a><a class="mini v-rej" href="../edits/metadata-tamper.html" title="Metadata tamper: rejected" style="--i:7"><span class="mono">T8</span><span>rejected</span></a><a class="mini v-acc" href="../edits/snapshot-rollback.html" title="Snapshot rollback: accepted" style="--i:8"><span class="mono">T9</span><span>served</span></a><a class="mini v-na" href="../edits/erase-resurrect.html" title="Erasure resurrection: n/a" style="--i:9"><span class="mono">T10</span><span>n/a</span></a></div>
+  <dl class="facts">
+    <dt>Measured on</dt><dd>@verax-ai/body 0.8.2 from npm, Node v22.23.5, Python 3.12, macOS, 2026-11-14</dd>
+    <dt>Date</dt><dd><time datetime="2026-11-14">2026-11-14</time></dd>
+    <dt>Source</dt><dd><a href="https://github.com/verax-ai/verax">github.com/verax-ai/verax</a></dd>
+    <dt>Attack versions</dt><dd class="mono">tamper@v1, truncate@v1, delete_middle@v1, reorder@v1, forge@v1, cross_replay@v1, rollback_replay@v1, metadata_tamper@v1, snapshot_rollback@v1, erase_resurrect@v1</dd>
+  </dl>
+</header>
+<section class="reveal">
+<h2>What this means</h2>
+<p>Nothing an attacker does to a single record reaches the agent. Every one of the eight record edits is refused when the agent next reads, because each object carries a hash over its own fields and the order comes from an Ed25519-signed commit chain. What still gets through is putting the whole state directory back to an earlier copy of itself. In the layout Verax ships, the signing keys and the memory head live in <code>keys/</code> inside that directory, so the restored copy is internally consistent and is opened as current; the newest genuine record is gone and no error is raised. Move the keys and the head out of the attacker's reach and the same edit is refused. That is the second row, and it is the same store and the same version.</p>
+</section>
+<section class="reveal">
+<h2>The 10 verdicts</h2>
+<p><strong>Detection point:</strong> the read path. 8 of the ten edits were refused there, 1 served as genuine, 1 not applicable.</p><p><strong>Level L3.</strong> <a href="../levels/l3.html">What L3 means</a>.</p>
+<table class="cells"><thead><tr><th scope="col">Edit</th><th scope="col">Verdict</th><th scope="col">What the tool said</th></tr></thead><tbody><tr><th scope="row"><a href="../edits/tamper.html">T1</a><br><span class="muted">Content tamper</span></th><td class="v-rej"><span class="verdict">rejected</span></td><td class="detail">detected on reload (memory.get a3: memory-integrity-mismatch)</td></tr><tr><th scope="row"><a href="../edits/truncate.html">T2</a><br><span class="muted">Tail truncation</span></th><td class="v-rej"><span class="verdict">rejected</span></td><td class="detail">detected on reload (memory.get a4: memory-integrity-missing)</td></tr><tr><th scope="row"><a href="../edits/delete-middle.html">T3</a><br><span class="muted">Middle deletion</span></th><td class="v-rej"><span class="verdict">rejected</span></td><td class="detail">detected on reload (memory.get a3: memory-integrity-missing)</td></tr><tr><th scope="row"><a href="../edits/reorder.html">T4</a><br><span class="muted">Reordering</span></th><td class="v-rej"><span class="verdict">rejected</span></td><td class="detail">detected on reload (memory.get a2: memory-integrity-mismatch)</td></tr><tr><th scope="row"><a href="../edits/forge.html">T5</a><br><span class="muted">Forged insertion</span></th><td class="v-rej"><span class="verdict">rejected</span></td><td class="detail">detected on reload (memory.get a99: memory-integrity-unattested)</td></tr><tr><th scope="row"><a href="../edits/cross-replay.html">T6</a><br><span class="muted">Cross-context replay</span></th><td class="v-rej"><span class="verdict">rejected</span></td><td class="detail">detected on reload (memory.get a5: memory-integrity-mismatch)</td></tr><tr><th scope="row"><a href="../edits/rollback-replay.html">T7</a><br><span class="muted">Rollback replay</span></th><td class="v-rej"><span class="verdict">rejected</span></td><td class="detail">detected on reload (memory.get a5: memory-integrity-mismatch)</td></tr><tr><th scope="row"><a href="../edits/metadata-tamper.html">T8</a><br><span class="muted">Metadata tamper</span></th><td class="v-rej"><span class="verdict">rejected</span></td><td class="detail">detected on reload (memory.get a3: memory-integrity-mismatch)</td></tr><tr><th scope="row"><a href="../edits/snapshot-rollback.html">T9</a><br><span class="muted">Snapshot rollback</span></th><td class="v-acc"><span class="verdict">accepted</span></td><td class="detail">the older copy opened as current; the newest genuine record is gone without an error</td></tr><tr><th scope="row"><a href="../edits/erase-resurrect.html">T10</a><br><span class="muted">Erasure resurrection</span></th><td class="v-na"><span class="verdict">n/a</span></td><td class="detail">Verax&#x27;s memory has no erase operation: its memory tools are memory.get and memory.put, and a record is replaced only by a newer revision</td></tr></tbody></table>
+<p class="muted">A verdict is what the tool did, not an opinion. "Accepted" means it loaded the altered store, raised nothing, and the agent carried on from the altered memory as if it were true. Every cell has a control that proves the edit landed before the verdict counts.</p>
+</section>
+<section class="reveal">
+<h2>Where the attacker stands</h2>
+<p>The attacker reads and writes the Verax state directory beneath the MCP server, as a mounted volume, a shared disk or a restored backup would allow. He signs nothing: the Ed25519 keys are not his. An attacker who holds the signing key is a different measurement and this row does not speak for it.</p>
+</section>
+<section class="reveal">
+<h2>Reproduce this row</h2>
+<p>Everything runs offline. The run seeds a fresh store, applies each edit beneath the server's own API, reopens the store and records what memory.get returned.</p>
+<pre><code>pip install agent-memory-integrity
+mkdir pin &amp;&amp; cd pin &amp;&amp; npm init -y &amp;&amp; npm install @verax-ai/body@0.8.2 &amp;&amp; cd ..
+export AGMI_VERAX_DIR=&lt;that pin directory&gt;
+python agmi/full_runner.py --json results/scorecard.json   # every row, this one included
+python -m agmi.agent --target verax-memory --families at-rest</code></pre>
+</section>
+<section>
+<h2>Badge</h2>
+<p>Maintainers can link their row from their README. The badge points here and changes nothing on your side:</p><pre><code>[![agmi: measured](https://img.shields.io/badge/agmi-measured-0F4C5C)](https://agentmemoryintegrity.org/stores/verax-memory.html)</code></pre>
+</section>
+<section>
+<h2>Related rows</h2>
+<ul class="related"><li><a href="../stores/verax-memory-head-outside.html">Verax memory, keys and head outside the state directory</a></li><li><a href="../stores/recallspection-exact.html">Recallspection ExactMemory</a></li><li><a href="../stores/surgical-devops-g7.html">Surgical DevOps G7</a></li><li><a href="../stores/atmem-chain.html">AtMem 2.3.8</a></li></ul>
+<p><a href="../scorecard.html">The whole scorecard</a> · <a href="../stores/index.html">All stores</a></p>
+</section>
+</article>
+</main>
+<footer class="foot">
+  <div class="foot-grid">
+    <div><strong>agmi 0.6.3</strong><br>Measured 2026-10-19. 41 rows, 26 stores, ten storage-level edits, six front-door attacks.</div>
+    <div><a href="../cite.html">Cite</a> · <a href="https://doi.org/10.5281/zenodo.23193233">DOI</a> · <a href="https://pypi.org/project/agent-memory-integrity/">PyPI</a> · <a href="https://www.ietf.org/archive/id/draft-khandelwal-bmwg-agent-memory-integrity-01.html">Internet-Draft</a> · <a href="../feed.xml">Feed</a> · <a href="../llms.txt">llms.txt</a></div>
+    <div>Built and maintained by <a href="https://yashakhandelwal.com/">Yasha Khandelwal</a> (<a href="mailto:yasha.khandelwal@tech4biz.io">yasha.khandelwal@tech4biz.io</a>, <a href="https://orcid.org/0009-0005-2166-4951">ORCID</a>). Hosted assessments and vendor badges through <a href="https://auditraxlabs.com/">AuditTrax Labs</a>. MIT licence · <a href="https://github.com/tech4biz-yasha/agmi/blob/main/CONTRIBUTING.md">Add a row</a></div>
+  </div>
+</footer>
+<div id="drawer" class="drawer" hidden role="dialog" aria-modal="true" aria-labelledby="dtitle">
+  <div class="drawer-card"><button type="button" class="drawer-close" aria-label="Close">×</button>
+  <p class="drawer-kicker" id="dkick"></p><h2 id="dtitle"></h2><p class="drawer-verdict" id="dverdict"></p>
+  <dl><dt>What the tool said</dt><dd id="ddetail"></dd><dt>Detection point</dt><dd id="dpoint"></dd><dt>Reproduce</dt><dd><code id="drepro"></code></dd></dl></div>
+</div>
+<script src="../site.js?v=0.6.3" defer></script>
+</body>
+</html>
