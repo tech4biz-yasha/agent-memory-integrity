@@ -21,18 +21,18 @@
   "results_file": {
    "path": "results/scorecard.json",
    "alg": "sha-256",
-   "value": "8ca4e4c9017180e4a9f28a9c4c4e18cb586498cb3fd428b25c0a5d441060e749",
+   "value": "41176fef49b3d5b0753036dbd12208d6894dbf6a97eff09a6723756fca52982e",
    "input": "exact file bytes"
   },
   "corpus_digest": {
    "alg": "sha-256",
-   "value": "ba8deb7f7a53933b9b4c7c25ca6218565f72788330ccf3d370ddb33b37d8cfbf",
+   "value": "732abb07566b396712c43814d38d56a4089b5185dae65a036df9d96232324630",
    "input": "JCS({results_file digest, sorted manifest of row digests})"
   }
  },
  "admitted_population": {
   "description": "every row in results/scorecard.json at the pinned commit",
-  "count": 39,
+  "count": 41,
   "manifest": [
    {
     "id": "acrf-memory-guard",
@@ -643,6 +643,38 @@
     }
    },
    {
+    "id": "verax-memory",
+    "digest": {
+     "alg": "sha-256",
+     "input": "JCS(row object)",
+     "value": "7a2a811069e0bd0d8f88c767ed1ed5b305de86cb3c0eefe99e91460e496528df"
+    },
+    "measured_on": "macOS, Python 3.12, Node v22.23.5, @verax-ai/body 0.8.2, 2026-11-14",
+    "detection_point": "read",
+    "verdicts": {
+     "accepted": 1,
+     "rejected": 8,
+     "reported": 0,
+     "n/a": 0
+    }
+   },
+   {
+    "id": "verax-memory+head-outside",
+    "digest": {
+     "alg": "sha-256",
+     "input": "JCS(row object)",
+     "value": "63b78af16840c8b9b0afc978b4c7183e80b89fe4dd6bb194218a03a651d89f4b"
+    },
+    "measured_on": "macOS, Python 3.12, Node v22.23.5, @verax-ai/body 0.8.2, 2026-11-14",
+    "detection_point": "read",
+    "verdicts": {
+     "accepted": 0,
+     "rejected": 9,
+     "reported": 0,
+     "n/a": 0
+    }
+   },
+   {
     "id": "vertex-memory-bank",
     "digest": {
      "alg": "sha-256",
@@ -668,7 +700,7 @@
  },
  "selector": {
   "expression": "rows[*].label",
-  "matched": 39,
+  "matched": 41,
   "rejection_grounds": [
    "selector-matched-zero",
    "selector-matched-multiple"
@@ -905,6 +937,18 @@
     "reported": 0,
     "n/a": 0
    },
+   "verax-memory": {
+    "accepted": 1,
+    "rejected": 8,
+    "reported": 0,
+    "n/a": 0
+   },
+   "verax-memory+head-outside": {
+    "accepted": 0,
+    "rejected": 9,
+    "reported": 0,
+    "n/a": 0
+   },
    "vertex-memory-bank": {
     "accepted": 7,
     "rejected": 0,
@@ -914,7 +958,7 @@
   },
   "printed_totals": {
    "rows": {
-    "value": 39,
+    "value": 41,
     "source": "results/scorecard.json row count as printed on docs/scorecard.md",
     "recount_agrees": true
    },
@@ -939,7 +983,7 @@
  "anchor": {
   "git": {
    "repository": "https://github.com/tech4biz-yasha/agent-memory-integrity",
-   "commit": "ed2d2913ae15dd4888eee427900a1da39e2dae46",
+   "commit": "7f91b0b575ef8e4a68081c7a2d484a5843eb7f29",
    "availability_failure": "commit does not resolve on the host",
    "integrity_failure": "commit resolves but results/scorecard.json digest differs"
   },
@@ -953,7 +997,7 @@
  },
  "checker": {
   "name": "agmi full runner and merge tool",
-  "source_revision": "ed2d2913ae15dd4888eee427900a1da39e2dae46",
+  "source_revision": "7f91b0b575ef8e4a68081c7a2d484a5843eb7f29",
   "command": "PYTHONPATH=. python agmi/full_runner.py --json <out>; python -m agmi.merge_rows results/scorecard.json <out> --labels <row>",
   "runtime": "Darwin x86_64, Python 3.12",
   "attack_versions": {
