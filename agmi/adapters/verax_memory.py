@@ -486,7 +486,7 @@ class VeraxMemoryAdapter(MemoryAdapter):
                 if kind == "refused":
                     bad.append(f"memory.get {row['id']}: {text}")
                 elif kind == "absent" and row["id"] in on_disk:
-                    bad.append(f"memory.get {row['id']}: not served ({text}); the object has no signed commit")
+                    bad.append(f"memory.get {row['id']}: not served ({text}) though the object is on disk")
         if bad:
             self.verify_detail = bad[0][:200]
             return False
