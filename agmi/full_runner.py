@@ -246,6 +246,12 @@ def full_scorecard() -> str:
     except ImportError:
         continuum_rows = []
     try:
+        import netops_copilot  # noqa: F401
+        from agmi.adapters.netops_copilot_journal import NetopsCopilotJournalAdapter
+        netops_rows = [("netops-copilot-journal", NetopsCopilotJournalAdapter(), None)]
+    except ImportError:
+        netops_rows = []
+    try:
         import agentmem_ref  # noqa: F401
         from agmi.adapters.agent_memory import AgentMemoryAdapter
         agent_memory_row = ("agent-memory", AgentMemoryAdapter(), None)
@@ -325,6 +331,7 @@ def full_scorecard() -> str:
         *mbb_rows,
         *atelya_rows,
         *continuum_rows,
+        *netops_rows,
         *atmem_rows,
         *surgical_devops_rows,
         *recallspection_rows,
