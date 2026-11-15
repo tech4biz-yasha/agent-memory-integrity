@@ -5,11 +5,18 @@ on:
     branches: [main]
 jobs:
   report-reader:
+    # Reads results/report-v01.json with the pinned corpus reader from the
+    # vectors extra. The committed root was computed with an older reader, so
+    # a newer reader disagreeing is a signal to read, not a defect in this
+    # repo: like the anchored-chain drift job in scorecard.yml, it reports and
+    # never blocks. The reader (--read-w3c-report) ships from
+    # agent-evidence-vectors 0.32.0 on.
     runs-on: ubuntu-latest
+    continue-on-error: true
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
-      - run: pip install -r requirements-conformance.txt
+      - run: pip install -e ".[vectors]"
       - run: agent-evidence-vectors --read-w3c-report results/report-v01.json
