@@ -23,7 +23,9 @@ with no key.
    `Store.verify_journal()`, which the `history` command prints as
    "Journal integrity (hash chain): OK / BROKEN" (exit code 5 when broken)
    and the web UI shows as a badge. Detection point is therefore the audit.
-5. Pinned: netops-copilot 0.1.0 at d7e4ec0.
+5. Pinned: netops-copilot 0.1.0 at d7e4ec0. Not on PyPI; install with
+   pip install "netops-copilot @ git+https://github.com/gokunguru/netops-copilot@d7e4ec0".
+   Without it the row and its tests are skipped.
 
 A second state directory stands in for the second context (the public
 demo gives each visitor a private lab directory). Erasure (T10) is the
