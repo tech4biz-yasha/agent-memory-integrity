@@ -1,0 +1,16 @@
+{
+ "title": "NetOps Copilot",
+ "subtitle": "hash-chained change journal, verify_journal() audit",
+ "label": "netops-copilot-journal",
+ "version": "netops-copilot 0.1.0 at d7e4ec0",
+ "measured_date": "2026-11-15",
+ "measured_on": "netops-copilot 0.1.0 installed from git at d7e4ec0, Python 3.12, macOS",
+ "source_url": "https://github.com/gokunguru/netops-copilot",
+ "source_label": "github.com/gokunguru/netops-copilot",
+ "What this means": "<p>The journal is a hash chain with no key, and nothing on the read path checks it: <code>rollback()</code> reads the journal to decide whether a change was already rolled back, and the history view and web UI list it, without checking the chain. The check is <code>verify_journal()</code>, which the history command prints as OK or BROKEN. That audit reports six of the ten edits. Four are served with no record anywhere: a shortened journal is still a valid chain, a forged line carries a digest the attacker computed exactly as <code>Store.append()</code> does, and an older copy of the whole journal, including one from before an erase, is consistent with itself. Because the chain is unkeyed, an attacker who re-chains after any of the six reported edits would pass the audit too; those cells measure the edits as the suite defines them, without re-chaining.</p>",
+ "Where the attacker stands": "<p>The attacker reads and writes the NetOps Copilot state directory (NETOPS_STATE_DIR, .netops by default), as a mounted volume, a shared disk or a restored backup would allow. The journal holds no key, so he can compute a valid digest for anything he writes. A second state directory is the second context.</p>",
+ "verdicts_intro": "<p><strong>Detection point:</strong> the audit, a separate call the operator has to make; the read path serves the edit first.</p><p><strong>Level L0, Measured.</strong> The store has a published row. Any verdicts. <a href=\"../levels/l0.html\">What L0 means</a>.</p>",
+ "reproduce_intro": "Everything runs offline. The run seeds a fresh journal through the tool's own Store, applies each edit beneath it, reopens the store and records what verify_journal() returned.",
+ "reproduce": "pip install agent-memory-integrity\npip install \"netops-copilot @ git+https://github.com/gokunguru/netops-copilot@d7e4ec0\"   # not on PyPI\npython agmi/full_runner.py --json results/scorecard.json   # every row, this one included\npython -m agmi.agent --target netops-copilot-journal --families at-rest",
+ "related": "<li><a href=\"../stores/continuum-events.html\">CONTINUUM event log, hash chain</a></li><li><a href=\"../stores/atelya-attest-chain.html\">Atelya Attest, keyed hash chain</a></li><li><a href=\"../stores/langgraph-ledger.html\">langgraph-ledger</a></li><li><a href=\"../stores/atelya-attest-chain-anchor.html\">Atelya Attest, anchored head</a></li>"
+}

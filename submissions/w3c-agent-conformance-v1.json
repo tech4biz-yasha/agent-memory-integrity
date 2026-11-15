@@ -21,18 +21,18 @@
   "results_file": {
    "path": "results/scorecard.json",
    "alg": "sha-256",
-   "value": "41176fef49b3d5b0753036dbd12208d6894dbf6a97eff09a6723756fca52982e",
+   "value": "5874baef4920b7d8f70d39cddf95e7946a77633bf6fc6939374f1404a070a9fb",
    "input": "exact file bytes"
   },
   "corpus_digest": {
    "alg": "sha-256",
-   "value": "732abb07566b396712c43814d38d56a4089b5185dae65a036df9d96232324630",
+   "value": "f2d32df772755eac61ca5dd2d651ed3c69b3df09ed862f0181ca938c5c175475",
    "input": "JCS({results_file digest, sorted manifest of row digests})"
   }
  },
  "admitted_population": {
   "description": "every row in results/scorecard.json at the pinned commit",
-  "count": 41,
+  "count": 42,
   "manifest": [
    {
     "id": "acrf-memory-guard",
@@ -531,6 +531,22 @@
     }
    },
    {
+    "id": "netops-copilot-journal",
+    "digest": {
+     "alg": "sha-256",
+     "input": "JCS(row object)",
+     "value": "c6d10473188b1ec80f51c42bcd769251e8cafc49a9fb52490b633ca88b5c6869"
+    },
+    "measured_on": "macOS, Python 3.12, netops-copilot 0.1.0 at d7e4ec0",
+    "detection_point": "audit",
+    "verdicts": {
+     "accepted": 3,
+     "rejected": 0,
+     "reported": 6,
+     "n/a": 0
+    }
+   },
+   {
     "id": "openai-agents-sqlite-session",
     "digest": {
      "alg": "sha-256",
@@ -700,7 +716,7 @@
  },
  "selector": {
   "expression": "rows[*].label",
-  "matched": 41,
+  "matched": 42,
   "rejection_grounds": [
    "selector-matched-zero",
    "selector-matched-multiple"
@@ -895,6 +911,12 @@
     "reported": 0,
     "n/a": 9
    },
+   "netops-copilot-journal": {
+    "accepted": 3,
+    "rejected": 0,
+    "reported": 6,
+    "n/a": 0
+   },
    "openai-agents-sqlite-session": {
     "accepted": 9,
     "rejected": 0,
@@ -958,12 +980,12 @@
   },
   "printed_totals": {
    "rows": {
-    "value": 41,
+    "value": 42,
     "source": "results/scorecard.json row count as printed on docs/scorecard.md",
     "recount_agrees": true
    },
    "stores_measured_badge": {
-    "value": 27,
+    "value": 28,
     "source": "README.md badge",
     "recount_agrees": null,
     "note": "no recount exists: 'store' has no decision rule in the results file and the badge is maintained by hand, so this total is reported here and not compared; a disagreement cannot be detected from the record"
@@ -983,7 +1005,7 @@
  "anchor": {
   "git": {
    "repository": "https://github.com/tech4biz-yasha/agent-memory-integrity",
-   "commit": "1878fe9d2409563456812718f6130c1164513e7b",
+   "commit": "6c034eb077c0cea61ba49c6db921147fc42f8ae6",
    "availability_failure": "commit does not resolve on the host",
    "integrity_failure": "commit resolves but results/scorecard.json digest differs"
   },
@@ -997,7 +1019,7 @@
  },
  "checker": {
   "name": "agmi full runner and merge tool",
-  "source_revision": "1878fe9d2409563456812718f6130c1164513e7b",
+  "source_revision": "6c034eb077c0cea61ba49c6db921147fc42f8ae6",
   "command": "PYTHONPATH=. python agmi/full_runner.py --json <out>; python -m agmi.merge_rows results/scorecard.json <out> --labels <row>",
   "runtime": "Darwin x86_64, Python 3.12",
   "attack_versions": {

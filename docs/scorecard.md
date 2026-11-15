@@ -40,6 +40,7 @@ Generated from the results file by `agmi.render`; do not edit by hand. Run of 20
 | surgical-devops-g7 | read | rejected | rejected | rejected | rejected | rejected |
 | verax-memory | read | rejected | rejected | rejected | rejected | rejected |
 | verax-memory+head-outside | read | rejected | rejected | rejected | rejected | rejected |
+| netops-copilot-journal | audit | reported | accepted | reported | reported | accepted |
 
 ## Through the front door
 
@@ -566,3 +567,18 @@ Measured on: macOS, Python 3.12, Node v22.23.5, @verax-ai/body 0.8.2, 2026-11-14
 - `rollback_replay`: rejected. detected on reload (memory.get a5: memory-integrity-mismatch).
 - `metadata_tamper`: rejected. detected on reload (memory.get a3: memory-integrity-mismatch).
 - `snapshot_rollback`: rejected. the store noticed it was older than its last committed state (memory.get a1: memory-integrity-history-unavailable).
+
+### netops-copilot-journal
+
+Measured on: macOS, Python 3.12, netops-copilot 0.1.0 at d7e4ec0
+
+- `tamper`: reported. detected on reload (verify_journal: False (history prints 'Journal integrity (hash chain): BROKEN')).
+- `truncate`: accepted. accepted silently.
+- `delete_middle`: reported. detected on reload (verify_journal: False (history prints 'Journal integrity (hash chain): BROKEN')).
+- `reorder`: reported. detected on reload (verify_journal: False (history prints 'Journal integrity (hash chain): BROKEN')).
+- `forge`: accepted. accepted silently.
+- `cross_replay`: reported. detected on reload (verify_journal: False (history prints 'Journal integrity (hash chain): BROKEN')).
+- `rollback_replay`: reported. detected on reload (verify_journal: False (history prints 'Journal integrity (hash chain): BROKEN')).
+- `metadata_tamper`: reported. detected on reload (verify_journal: False (history prints 'Journal integrity (hash chain): BROKEN')).
+- `snapshot_rollback`: accepted. the older copy opened as current; the newest genuine record is gone without an error.
+- `erase_resurrect`: accepted. the restored copy opened as current; the record the store had erased is served again without an error.

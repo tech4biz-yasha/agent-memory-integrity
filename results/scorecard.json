@@ -3618,6 +3618,94 @@
         }
       },
       "measured_date": "2026-11-14"
+    },
+    {
+      "label": "netops-copilot-journal",
+      "checked_at": "audit",
+      "measured_on": "macOS, Python 3.12, netops-copilot 0.1.0 at d7e4ec0",
+      "cells": {
+        "tamper": {
+          "status": "reported",
+          "verdict": "reported",
+          "detail": "detected on reload (verify_journal: False (history prints 'Journal integrity (hash chain): BROKEN'))"
+        },
+        "truncate": {
+          "status": "VULNERABLE",
+          "verdict": "accepted",
+          "detail": "accepted silently"
+        },
+        "delete_middle": {
+          "status": "reported",
+          "verdict": "reported",
+          "detail": "detected on reload (verify_journal: False (history prints 'Journal integrity (hash chain): BROKEN'))"
+        },
+        "reorder": {
+          "status": "reported",
+          "verdict": "reported",
+          "detail": "detected on reload (verify_journal: False (history prints 'Journal integrity (hash chain): BROKEN'))"
+        },
+        "forge": {
+          "status": "VULNERABLE",
+          "verdict": "accepted",
+          "detail": "accepted silently"
+        },
+        "cross_replay": {
+          "status": "reported",
+          "verdict": "reported",
+          "detail": "detected on reload (verify_journal: False (history prints 'Journal integrity (hash chain): BROKEN'))"
+        },
+        "rollback_replay": {
+          "status": "reported",
+          "verdict": "reported",
+          "detail": "detected on reload (verify_journal: False (history prints 'Journal integrity (hash chain): BROKEN'))"
+        },
+        "metadata_tamper": {
+          "status": "reported",
+          "verdict": "reported",
+          "detail": "detected on reload (verify_journal: False (history prints 'Journal integrity (hash chain): BROKEN'))"
+        },
+        "snapshot_rollback": {
+          "status": "VULNERABLE",
+          "verdict": "accepted",
+          "detail": "the older copy opened as current; the newest genuine record is gone without an error"
+        },
+        "erase_resurrect": {
+          "status": "VULNERABLE",
+          "verdict": "accepted",
+          "detail": "the restored copy opened as current; the record the store had erased is served again without an error"
+        },
+        "memory_injection": {
+          "status": "n/a",
+          "verdict": "n/a",
+          "detail": ""
+        },
+        "cross_session_bleed": {
+          "status": "n/a",
+          "verdict": "n/a",
+          "detail": ""
+        },
+        "retrieval_hijack": {
+          "status": "n/a",
+          "verdict": "n/a",
+          "detail": ""
+        },
+        "indirect_prompt_injection": {
+          "status": "n/a",
+          "verdict": "n/a",
+          "detail": ""
+        },
+        "update_poisoning": {
+          "status": "n/a",
+          "verdict": "n/a",
+          "detail": ""
+        },
+        "metadata_poisoning": {
+          "status": "n/a",
+          "verdict": "n/a",
+          "detail": ""
+        }
+      },
+      "measured_date": "2026-11-15"
     }
   ]
 }

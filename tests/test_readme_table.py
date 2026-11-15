@@ -63,6 +63,8 @@ ROWS = {
         "verax-memory",
     "Verax memory, keys and memory head outside the state directory, read path":
         "verax-memory+head-outside",
+    "NetOps Copilot change journal, unkeyed hash chain, `verify_journal()` audit":
+        "netops-copilot-journal",
 }
 
 

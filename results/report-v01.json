@@ -1,8 +1,8 @@
 {
   "check-set": {
     "digest-encoding": "jcs-sha256",
-    "leaf-count": 656,
-    "sha256": "7d4003c077c073b6c11c2e0586a65f8c29a73e1601588dfd94181718ab0077fa",
+    "leaf-count": 672,
+    "sha256": "ac4c96ca6031bd1617735d0dec315045bce07b36d71bea4b32c670fdb9f3f60f",
     "tree-shape": "flat"
   },
   "checks": [
@@ -13721,6 +13721,356 @@
       },
       "check": "verax-memory+head-outside/metadata_poisoning@v1",
       "state": "not-exercised"
+    },
+    {
+      "annotations": {
+        "attack-version": 1,
+        "attacker": "store-access",
+        "checked-at": "audit",
+        "detail": "detected on reload (verify_journal: False (history prints 'Journal integrity (hash chain): BROKEN'))",
+        "detection": "audit",
+        "edit": "tamper",
+        "edit-name": "T1",
+        "measured-on": "macOS, Python 3.12, netops-copilot 0.1.0 at d7e4ec0",
+        "status": "reported",
+        "store": "netops-copilot-journal",
+        "verdict": "reported"
+      },
+      "check": "netops-copilot-journal/tamper@v1",
+      "discrimination": {
+        "value": "unknown"
+      },
+      "other-verdict": {
+        "value": "unknown"
+      },
+      "state": "fail"
+    },
+    {
+      "annotations": {
+        "attack-version": 1,
+        "attacker": "store-access",
+        "checked-at": "audit",
+        "detail": "accepted silently",
+        "detection": "none",
+        "edit": "truncate",
+        "edit-name": "T2",
+        "measured-on": "macOS, Python 3.12, netops-copilot 0.1.0 at d7e4ec0",
+        "status": "VULNERABLE",
+        "store": "netops-copilot-journal",
+        "verdict": "accepted"
+      },
+      "check": "netops-copilot-journal/truncate@v1",
+      "discrimination": {
+        "value": "unknown"
+      },
+      "other-verdict": {
+        "value": "unknown"
+      },
+      "state": "fail"
+    },
+    {
+      "annotations": {
+        "attack-version": 1,
+        "attacker": "store-access",
+        "checked-at": "audit",
+        "detail": "detected on reload (verify_journal: False (history prints 'Journal integrity (hash chain): BROKEN'))",
+        "detection": "audit",
+        "edit": "delete_middle",
+        "edit-name": "T3",
+        "measured-on": "macOS, Python 3.12, netops-copilot 0.1.0 at d7e4ec0",
+        "status": "reported",
+        "store": "netops-copilot-journal",
+        "verdict": "reported"
+      },
+      "check": "netops-copilot-journal/delete_middle@v1",
+      "discrimination": {
+        "value": "unknown"
+      },
+      "other-verdict": {
+        "value": "unknown"
+      },
+      "state": "fail"
+    },
+    {
+      "annotations": {
+        "attack-version": 1,
+        "attacker": "store-access",
+        "checked-at": "audit",
+        "detail": "detected on reload (verify_journal: False (history prints 'Journal integrity (hash chain): BROKEN'))",
+        "detection": "audit",
+        "edit": "reorder",
+        "edit-name": "T4",
+        "measured-on": "macOS, Python 3.12, netops-copilot 0.1.0 at d7e4ec0",
+        "status": "reported",
+        "store": "netops-copilot-journal",
+        "verdict": "reported"
+      },
+      "check": "netops-copilot-journal/reorder@v1",
+      "discrimination": {
+        "value": "unknown"
+      },
+      "other-verdict": {
+        "value": "unknown"
+      },
+      "state": "fail"
+    },
+    {
+      "annotations": {
+        "attack-version": 1,
+        "attacker": "store-access",
+        "checked-at": "audit",
+        "detail": "accepted silently",
+        "detection": "none",
+        "edit": "forge",
+        "edit-name": "T5",
+        "measured-on": "macOS, Python 3.12, netops-copilot 0.1.0 at d7e4ec0",
+        "status": "VULNERABLE",
+        "store": "netops-copilot-journal",
+        "verdict": "accepted"
+      },
+      "check": "netops-copilot-journal/forge@v1",
+      "discrimination": {
+        "value": "unknown"
+      },
+      "other-verdict": {
+        "value": "unknown"
+      },
+      "state": "fail"
+    },
+    {
+      "annotations": {
+        "attack-version": 1,
+        "attacker": "store-access",
+        "checked-at": "audit",
+        "detail": "detected on reload (verify_journal: False (history prints 'Journal integrity (hash chain): BROKEN'))",
+        "detection": "audit",
+        "edit": "cross_replay",
+        "edit-name": "T6",
+        "measured-on": "macOS, Python 3.12, netops-copilot 0.1.0 at d7e4ec0",
+        "status": "reported",
+        "store": "netops-copilot-journal",
+        "verdict": "reported"
+      },
+      "check": "netops-copilot-journal/cross_replay@v1",
+      "discrimination": {
+        "value": "unknown"
+      },
+      "other-verdict": {
+        "value": "unknown"
+      },
+      "state": "fail"
+    },
+    {
+      "annotations": {
+        "attack-version": 1,
+        "attacker": "store-access",
+        "checked-at": "audit",
+        "detail": "detected on reload (verify_journal: False (history prints 'Journal integrity (hash chain): BROKEN'))",
+        "detection": "audit",
+        "edit": "rollback_replay",
+        "edit-name": "T7",
+        "measured-on": "macOS, Python 3.12, netops-copilot 0.1.0 at d7e4ec0",
+        "status": "reported",
+        "store": "netops-copilot-journal",
+        "verdict": "reported"
+      },
+      "check": "netops-copilot-journal/rollback_replay@v1",
+      "discrimination": {
+        "value": "unknown"
+      },
+      "other-verdict": {
+        "value": "unknown"
+      },
+      "state": "fail"
+    },
+    {
+      "annotations": {
+        "attack-version": 1,
+        "attacker": "store-access",
+        "checked-at": "audit",
+        "detail": "detected on reload (verify_journal: False (history prints 'Journal integrity (hash chain): BROKEN'))",
+        "detection": "audit",
+        "edit": "metadata_tamper",
+        "edit-name": "T8",
+        "measured-on": "macOS, Python 3.12, netops-copilot 0.1.0 at d7e4ec0",
+        "status": "reported",
+        "store": "netops-copilot-journal",
+        "verdict": "reported"
+      },
+      "check": "netops-copilot-journal/metadata_tamper@v1",
+      "discrimination": {
+        "value": "unknown"
+      },
+      "other-verdict": {
+        "value": "unknown"
+      },
+      "state": "fail"
+    },
+    {
+      "annotations": {
+        "attack-version": 1,
+        "attacker": "store-access",
+        "checked-at": "audit",
+        "detail": "the older copy opened as current; the newest genuine record is gone without an error",
+        "detection": "none",
+        "edit": "snapshot_rollback",
+        "edit-name": "T9",
+        "measured-on": "macOS, Python 3.12, netops-copilot 0.1.0 at d7e4ec0",
+        "status": "VULNERABLE",
+        "store": "netops-copilot-journal",
+        "verdict": "accepted"
+      },
+      "check": "netops-copilot-journal/snapshot_rollback@v1",
+      "discrimination": {
+        "value": "unknown"
+      },
+      "other-verdict": {
+        "value": "unknown"
+      },
+      "state": "fail"
+    },
+    {
+      "annotations": {
+        "attack-version": 1,
+        "attacker": "store-access",
+        "checked-at": "audit",
+        "detail": "the restored copy opened as current; the record the store had erased is served again without an error",
+        "detection": "none",
+        "edit": "erase_resurrect",
+        "edit-name": "T10",
+        "measured-on": "macOS, Python 3.12, netops-copilot 0.1.0 at d7e4ec0",
+        "status": "VULNERABLE",
+        "store": "netops-copilot-journal",
+        "verdict": "accepted"
+      },
+      "check": "netops-copilot-journal/erase_resurrect@v1",
+      "discrimination": {
+        "value": "unknown"
+      },
+      "other-verdict": {
+        "value": "unknown"
+      },
+      "state": "fail"
+    },
+    {
+      "annotations": {
+        "attack-version": 3,
+        "attacker": "write-access",
+        "checked-at": "audit",
+        "detail": "",
+        "edit": "memory_injection",
+        "edit-name": "W1",
+        "measured-on": "macOS, Python 3.12, netops-copilot 0.1.0 at d7e4ec0",
+        "status": "n/a",
+        "store": "netops-copilot-journal",
+        "verdict": "n/a"
+      },
+      "cause": {
+        "code": "not_applicable",
+        "detail": "this edit belongs to the write-access attacker; the row is measured under the store-access attacker"
+      },
+      "check": "netops-copilot-journal/memory_injection@v3",
+      "state": "not-exercised"
+    },
+    {
+      "annotations": {
+        "attack-version": 2,
+        "attacker": "write-access",
+        "checked-at": "audit",
+        "detail": "",
+        "edit": "cross_session_bleed",
+        "edit-name": "W2",
+        "measured-on": "macOS, Python 3.12, netops-copilot 0.1.0 at d7e4ec0",
+        "status": "n/a",
+        "store": "netops-copilot-journal",
+        "verdict": "n/a"
+      },
+      "cause": {
+        "code": "not_applicable",
+        "detail": "this edit belongs to the write-access attacker; the row is measured under the store-access attacker"
+      },
+      "check": "netops-copilot-journal/cross_session_bleed@v2",
+      "state": "not-exercised"
+    },
+    {
+      "annotations": {
+        "attack-version": 4,
+        "attacker": "write-access",
+        "checked-at": "audit",
+        "detail": "",
+        "edit": "retrieval_hijack",
+        "edit-name": "W3",
+        "measured-on": "macOS, Python 3.12, netops-copilot 0.1.0 at d7e4ec0",
+        "status": "n/a",
+        "store": "netops-copilot-journal",
+        "verdict": "n/a"
+      },
+      "cause": {
+        "code": "not_applicable",
+        "detail": "this edit belongs to the write-access attacker; the row is measured under the store-access attacker"
+      },
+      "check": "netops-copilot-journal/retrieval_hijack@v4",
+      "state": "not-exercised"
+    },
+    {
+      "annotations": {
+        "attack-version": 3,
+        "attacker": "write-access",
+        "checked-at": "audit",
+        "detail": "",
+        "edit": "indirect_prompt_injection",
+        "edit-name": "W4",
+        "measured-on": "macOS, Python 3.12, netops-copilot 0.1.0 at d7e4ec0",
+        "status": "n/a",
+        "store": "netops-copilot-journal",
+        "verdict": "n/a"
+      },
+      "cause": {
+        "code": "not_applicable",
+        "detail": "this edit belongs to the write-access attacker; the row is measured under the store-access attacker"
+      },
+      "check": "netops-copilot-journal/indirect_prompt_injection@v3",
+      "state": "not-exercised"
+    },
+    {
+      "annotations": {
+        "attack-version": 1,
+        "attacker": "write-access",
+        "checked-at": "audit",
+        "detail": "",
+        "edit": "update_poisoning",
+        "edit-name": "W5",
+        "measured-on": "macOS, Python 3.12, netops-copilot 0.1.0 at d7e4ec0",
+        "status": "n/a",
+        "store": "netops-copilot-journal",
+        "verdict": "n/a"
+      },
+      "cause": {
+        "code": "not_applicable",
+        "detail": "this edit belongs to the write-access attacker; the row is measured under the store-access attacker"
+      },
+      "check": "netops-copilot-journal/update_poisoning@v1",
+      "state": "not-exercised"
+    },
+    {
+      "annotations": {
+        "attack-version": 1,
+        "attacker": "write-access",
+        "checked-at": "audit",
+        "detail": "",
+        "edit": "metadata_poisoning",
+        "edit-name": "W6",
+        "measured-on": "macOS, Python 3.12, netops-copilot 0.1.0 at d7e4ec0",
+        "status": "n/a",
+        "store": "netops-copilot-journal",
+        "verdict": "n/a"
+      },
+      "cause": {
+        "code": "not_applicable",
+        "detail": "this edit belongs to the write-access attacker; the row is measured under the store-access attacker"
+      },
+      "check": "netops-copilot-journal/metadata_poisoning@v1",
+      "state": "not-exercised"
     }
   ],
   "crosswalk": {
@@ -13786,29 +14136,29 @@
     "completeness": {
       "accounting": {
         "claim": "satisfied",
-        "population": 656
+        "population": 672
       },
       "evidence": {
         "claim": "not-satisfied",
-        "population": 348
+        "population": 358
       },
       "execution": {
         "claim": "not-satisfied",
-        "population": 656
+        "population": 672
       },
       "no-void": {
         "claim": "satisfied",
-        "population": 656
+        "population": 672
       }
     },
-    "declared": 656,
-    "exercised": 348,
-    "fail": 267,
+    "declared": 672,
+    "exercised": 358,
+    "fail": 277,
     "inconclusive": 0,
     "negative-capable": {
       "kind": "shown-by-run"
     },
-    "not-exercised": 308,
+    "not-exercised": 314,
     "pass": 81,
     "referenced": 0,
     "void": 0
@@ -13818,8 +14168,8 @@
     "edits": 16,
     "platform": "Darwin x86_64, Python 3.12",
     "results-file": "results/scorecard.json",
-    "results-sha256": "41176fef49b3d5b0753036dbd12208d6894dbf6a97eff09a6723756fca52982e",
-    "rows": 41,
+    "results-sha256": "5874baef4920b7d8f70d39cddf95e7946a77633bf6fc6939374f1404a070a9fb",
+    "rows": 42,
     "suite": "agmi"
   }
 }
