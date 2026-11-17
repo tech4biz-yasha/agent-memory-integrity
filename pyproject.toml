@@ -42,7 +42,7 @@ bedrock = ["boto3>=1.40"]
 # verifies Ed25519 signatures with; it arrives transitively through
 # inspeximus[crypto] today, which is too quiet a dependency for a test that
 # pins published results.
-vectors = ["agent-evidence-vectors==0.26.0", "cryptography"]
+vectors = ["agent-evidence-vectors==0.36.3", "cryptography"]
 # A real sentence embedder for the memory-specific Mem0 cells. Pulls in
 # torch; the model (about 90 MB) is fetched once and cached locally.
 embedder = ["sentence-transformers"]
