@@ -21,18 +21,18 @@
   "results_file": {
    "path": "results/scorecard.json",
    "alg": "sha-256",
-   "value": "5874baef4920b7d8f70d39cddf95e7946a77633bf6fc6939374f1404a070a9fb",
+   "value": "cc691972aeaba4fcc9c89511b37266e1539e84b7070385ff1fe25f416a25a213",
    "input": "exact file bytes"
   },
   "corpus_digest": {
    "alg": "sha-256",
-   "value": "f2d32df772755eac61ca5dd2d651ed3c69b3df09ed862f0181ca938c5c175475",
+   "value": "0aeac00d496803d072136225fcbe9e7f772a975e6132ee00559b1ade374762e4",
    "input": "JCS({results_file digest, sorted manifest of row digests})"
   }
  },
  "admitted_population": {
   "description": "every row in results/scorecard.json at the pinned commit",
-  "count": 42,
+  "count": 45,
   "manifest": [
    {
     "id": "acrf-memory-guard",
@@ -705,6 +705,54 @@
      "reported": 0,
      "n/a": 2
     }
+   },
+   {
+    "id": "whitemagic-crystals",
+    "digest": {
+     "alg": "sha-256",
+     "input": "JCS(row object)",
+     "value": "d7f571e3f28a9bf77f0e65bc07be2623c9a7fb79b44c256d7cdeafbbc83fd508"
+    },
+    "measured_on": "macOS, Python 3.12, whitemagic crystal_client.py at 273b177b",
+    "detection_point": "read",
+    "verdicts": {
+     "accepted": 0,
+     "rejected": 9,
+     "reported": 0,
+     "n/a": 0
+    }
+   },
+   {
+    "id": "whitemagic-crystals+ciphertext-audit",
+    "digest": {
+     "alg": "sha-256",
+     "input": "JCS(row object)",
+     "value": "29e68bb8b8248dd352cfc9b212158a70cfb3550bbdbea8b03b59eb27f83308b9"
+    },
+    "measured_on": "macOS, Python 3.12, whitemagic crystal_client.py at 273b177b",
+    "detection_point": "audit",
+    "verdicts": {
+     "accepted": 0,
+     "rejected": 0,
+     "reported": 9,
+     "n/a": 0
+    }
+   },
+   {
+    "id": "whitemagic-crystals+in-store",
+    "digest": {
+     "alg": "sha-256",
+     "input": "JCS(row object)",
+     "value": "2662692593d6b4efef81152f4294c6a94af62a2193e81b50947ea4eaf750fc0f"
+    },
+    "measured_on": "macOS, Python 3.12, whitemagic crystal_client.py at 273b177b",
+    "detection_point": "read",
+    "verdicts": {
+     "accepted": 1,
+     "rejected": 8,
+     "reported": 0,
+     "n/a": 0
+    }
    }
   ],
   "rejection_grounds": [
@@ -716,7 +764,7 @@
  },
  "selector": {
   "expression": "rows[*].label",
-  "matched": 42,
+  "matched": 45,
   "rejection_grounds": [
    "selector-matched-zero",
    "selector-matched-multiple"
@@ -976,16 +1024,34 @@
     "rejected": 0,
     "reported": 0,
     "n/a": 2
+   },
+   "whitemagic-crystals": {
+    "accepted": 0,
+    "rejected": 9,
+    "reported": 0,
+    "n/a": 0
+   },
+   "whitemagic-crystals+ciphertext-audit": {
+    "accepted": 0,
+    "rejected": 0,
+    "reported": 9,
+    "n/a": 0
+   },
+   "whitemagic-crystals+in-store": {
+    "accepted": 1,
+    "rejected": 8,
+    "reported": 0,
+    "n/a": 0
    }
   },
   "printed_totals": {
    "rows": {
-    "value": 42,
+    "value": 45,
     "source": "results/scorecard.json row count as printed on docs/scorecard.md",
     "recount_agrees": true
    },
    "stores_measured_badge": {
-    "value": 28,
+    "value": 29,
     "source": "README.md badge",
     "recount_agrees": null,
     "note": "no recount exists: 'store' has no decision rule in the results file and the badge is maintained by hand, so this total is reported here and not compared; a disagreement cannot be detected from the record"
@@ -1005,7 +1071,7 @@
  "anchor": {
   "git": {
    "repository": "https://github.com/tech4biz-yasha/agent-memory-integrity",
-   "commit": "a78bafed25550013ddcfa8c4d9f6fc6128da5cec",
+   "commit": "588639492f2ece7dd897719a174554fcbc7d9cdb",
    "availability_failure": "commit does not resolve on the host",
    "integrity_failure": "commit resolves but results/scorecard.json digest differs"
   },
@@ -1019,7 +1085,7 @@
  },
  "checker": {
   "name": "agmi full runner and merge tool",
-  "source_revision": "a78bafed25550013ddcfa8c4d9f6fc6128da5cec",
+  "source_revision": "588639492f2ece7dd897719a174554fcbc7d9cdb",
   "command": "PYTHONPATH=. python agmi/full_runner.py --json <out>; python -m agmi.merge_rows results/scorecard.json <out> --labels <row>",
   "runtime": "Darwin x86_64, Python 3.12",
   "attack_versions": {
