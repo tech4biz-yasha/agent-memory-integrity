@@ -21,30 +21,34 @@ content-addressed, lineage-chained memory store for agents.
    Ed25519 commitment signing key.
 
 4. What is the read path?
-   `crystal_client.verify_and_unseal_crystal_set(crystals, key, tenant_hash,
-   expected_commitment=..., anchor_public_key=...)`, which verifies the high-water
-   commitment, checks `tenant_hash` context binding and `parent_crystal_id`
-   lineage links, recomputes `crystal_id = sha256(id_kek_version_be32 || nonce || ciphertext)`,
-   unwraps the per-crystal DEK, and AEAD-decrypts each crystal over its bound
-   AAD (`cipher|tenant_hash|parent_crystal_id|created_at|metadata_public`).
+   - Default `whitemagic-crystals`: `crystal_client.LocalCrystalStore.read_all()`,
+     which verifies the off-store signed erasure-aware commitment (persisted by
+     default under `$XDG_STATE_HOME/whitemagic/anchors/` outside `store-<ctx>/`),
+     checks `tenant_hash` context binding and `parent_crystal_id` lineage links,
+     verifies optional `client_sig` and `crystal_id`, unwraps the per-crystal DEK,
+     and AEAD-decrypts each crystal over its bound AAD.
+   - Counterfactual `whitemagic-crystals+in-store`: stateless
+     `verify_and_unseal_crystal_set(...)` reading `commitment.json` kept inside
+     `store-<ctx>/`, isolating the store-boundary rollback risk (T9/T10).
 
 5. What is pinned?
    `crystal_client.py` from `lbailey94/whitemagic`, full commit and file SHA-256
    below. The selected source bytes are checked before importing. Python 3.12
-   + `cryptography`. Two plaintext-read configurations:
-     - `whitemagic-crystals`: commitment stored inside `store-<ctx>/` on the
-       same disk.
-     - `whitemagic-crystals+anchor`: commitment stored outside the store
-       directory (`offstore-anchors/`), detecting whole-store snapshot rollback (T9).
-   The `whitemagic-crystals+ciphertext-audit` row (formerly `whitemagic-crystals+l5`)
-   is a separate encrypted-envelope audit without the KEK. Its payload is the signed
-   ciphertext, not the detached plaintext `value`; it does not measure a verified
-   plaintext read path or a formal zero-knowledge proof.
+   + `cryptography`. Three measured configurations:
+     - `whitemagic-crystals`: shipped `LocalCrystalStore` default, auto-persisting
+       its signed commitment outside `store-<ctx>/` (`$XDG_STATE_HOME`),
+       defeating store-directory snapshot rollback (T9) and erasure resurrection (T10).
+     - `whitemagic-crystals+in-store`: counterfactual baseline placing `commitment.json`
+       inside `store-<ctx>/` via stateless functions (`T9`/`T10` roll back with store).
+     - `whitemagic-crystals+ciphertext-audit` (formerly `whitemagic-crystals+l5`):
+       encrypted-envelope audit without the KEK; payload is signed ciphertext,
+       not detached plaintext fields.
 """
 
 from __future__ import annotations
 
 import base64
+from contextlib import contextmanager
 import copy
 import datetime as dt
 import hashlib
@@ -62,12 +66,13 @@ from cryptography.hazmat.primitives.serialization import Encoding, PublicFormat
 
 from agmi.adapters.base import MemoryAdapter, Record
 
-PIN = "777d33d14913a0d4560e4899913df459c554a5a5"
-CLIENT_SHA256 = "cc4048754ac6674a40df3d54d115810c726c0994b9d33e1416a4d09384797a64"
+PIN = "273b177b5c59eb3148b721a85683ab929041d246"
+CLIENT_SHA256 = "e44b13f2103fb3191d43bfe7cb5bbbde6393b6756af2c5fd4c2c28a52bd89fe9"
 SPEC_VERSION = "wm-crystal/1.0"
 CTX, OTHER = "a", "b"
 STORE_FILE = "crystals.json"
 ERASURES_FILE = "erasures.json"
+SLOTS_FILE = "slots.json"
 ANCHOR_FILE = "commitment.json"
 SEED_TOKEN = "agmi-seed-"
 OTHER_TOKEN = "agmi-other-"
@@ -79,6 +84,19 @@ ANCHOR_PUB_BYTES = (
     .public_key()
     .public_bytes(Encoding.Raw, PublicFormat.Raw)
 )
+
+
+@contextmanager
+def _xdg_state_env(path: Path):
+    prev = os.environ.get("XDG_STATE_HOME")
+    os.environ["XDG_STATE_HOME"] = str(path)
+    try:
+        yield
+    finally:
+        if prev is None:
+            os.environ.pop("XDG_STATE_HOME", None)
+        else:
+            os.environ["XDG_STATE_HOME"] = prev
 
 
 CRYSTAL_CLIENT_ENV = "AGMI_WHITEMAGIC_CRYSTAL_CLIENT"
@@ -123,7 +141,7 @@ def _load_crystal_client():
 
 
 class WhiteMagicCrystalsAdapter(MemoryAdapter):
-    """WhiteMagic Memory Crystals with the head commitment stored beside the store on the same disk."""
+    """WhiteMagic Memory Crystals (`LocalCrystalStore`) with automatic off-store anchor persistence."""
 
     name = "whitemagic-crystals"
     supports_replay = True
@@ -131,8 +149,6 @@ class WhiteMagicCrystalsAdapter(MemoryAdapter):
     supports_snapshot = True
     supports_erase = True
     detection_point = "read"
-
-    anchor_off_store = False
 
     def __init__(self):
         self._cc = _load_crystal_client()
@@ -146,28 +162,41 @@ class WhiteMagicCrystalsAdapter(MemoryAdapter):
         assert self._root is not None
         return self._root / f"store-{ctx}"
 
+    def _xdg_dir(self) -> Path:
+        assert self._root is not None
+        return self._root / "xdg-state"
+
     def _store_path(self, ctx: str) -> Path:
         return self._dir(ctx) / STORE_FILE
 
-    def _anchor_path(self, ctx: str) -> Path:
-        assert self._root is not None
-        if self.anchor_off_store:
-            return self._root / "offstore-anchors" / f"{ctx}-{ANCHOR_FILE}"
-        return self._dir(ctx) / ANCHOR_FILE
+    def _slots_path(self, ctx: str) -> Path:
+        return self._dir(ctx) / SLOTS_FILE
 
     def _erasures_path(self, ctx: str) -> Path:
-        # The erasure list is part of the store: it rolls back with the store,
-        # which is exactly why the *anchor* has to commit to it.
         return self._dir(ctx) / ERASURES_FILE
 
     def _tenant_hash(self, ctx: str) -> str:
         return self._cc.compute_tenant_hash(f"tenant-{ctx}")
 
+    def _open_store(self, ctx: str, *, create: bool = True):
+        with _xdg_state_env(self._xdg_dir()):
+            return self._cc.LocalCrystalStore(
+                self._dir(ctx),
+                key=KEK,
+                tenant_id=f"tenant-{ctx}",
+                anchor_signing_key=ANCHOR_PRIV_BYTES,
+                anchor_public_key=ANCHOR_PUB_BYTES,
+                cipher="chacha20-poly1305",
+                kek_version=1,
+                create=create,
+            )
+
     def setup(self) -> None:
         self._root = Path(tempfile.mkdtemp(prefix="agmi-wm-crystals-"))
+        self._xdg_dir().mkdir(parents=True, exist_ok=True)
         for ctx in (CTX, OTHER):
-            self._dir(ctx).mkdir(parents=True, exist_ok=True)
-            self._store_path(ctx).write_text("[]", encoding="utf-8")
+            self._open_store(ctx, create=True)
+            self._save_slots(ctx, [])
 
     def teardown(self) -> None:
         if self._root:
@@ -177,15 +206,26 @@ class WhiteMagicCrystalsAdapter(MemoryAdapter):
     def _value(self, token: str, i: int) -> str:
         return f"the limit is {50 + i}" if token == SEED_TOKEN else f"the quota is {90 + i}"
 
-    def _load_entries(self, ctx: str) -> list[dict]:
+    def _load_envelopes(self, ctx: str) -> list[dict]:
         p = self._store_path(ctx)
         if not p.is_file():
             return []
         return json.loads(p.read_text(encoding="utf-8"))
 
-    def _save_entries(self, ctx: str, entries: list[dict]) -> None:
+    def _save_envelopes(self, ctx: str, envs: list[dict]) -> None:
         self._store_path(ctx).write_text(
-            json.dumps(entries, indent=2, sort_keys=True), encoding="utf-8"
+            json.dumps(envs, indent=2, sort_keys=True), encoding="utf-8"
+        )
+
+    def _load_slots(self, ctx: str) -> list[dict]:
+        p = self._slots_path(ctx)
+        if not p.is_file():
+            return []
+        return json.loads(p.read_text(encoding="utf-8"))
+
+    def _save_slots(self, ctx: str, slots: list[dict]) -> None:
+        self._slots_path(ctx).write_text(
+            json.dumps(slots, indent=2, sort_keys=True), encoding="utf-8"
         )
 
     def _load_erasures(self, ctx: str) -> list[dict]:
@@ -194,52 +234,19 @@ class WhiteMagicCrystalsAdapter(MemoryAdapter):
             return []
         return json.loads(p.read_text(encoding="utf-8"))
 
-    def _save_erasures(self, ctx: str, erasures: list[dict]) -> None:
-        self._erasures_path(ctx).write_text(
-            json.dumps(erasures, indent=2, sort_keys=True), encoding="utf-8"
-        )
-
-    def _save_anchor(self, ctx: str, entries: list[dict]) -> None:
-        """Rewrite the set commitment over the store *and* its erasure list.
-
-        Deliberately not a high-water mark. A count that only grows catches T9
-        (append then roll back) but not T10: erasure lowers the count, so a
-        restored pre-erasure copy is a superset of the anchor and passes. The
-        commitment therefore carries ``erasure_count``, an
-        ``erased_crystal_ids_digest`` and a ``revision`` that increases on every
-        add and every erase. Where the anchor lives then decides the outcome:
-        inside the store it rolls back with the copy (T10 served), outside it it
-        does not (T10 refused).
-        """
-        apath = self._anchor_path(ctx)
-        envelopes = [e["env"] for e in entries]
-        apath.parent.mkdir(parents=True, exist_ok=True)
-        comm = self._cc.compute_crystal_set_commitment(
-            envelopes,
-            self._tenant_hash(ctx),
-            signing_key=ANCHOR_PRIV_BYTES,
-            erasures=self._load_erasures(ctx),
-        )
-        apath.write_text(json.dumps(comm, indent=2, sort_keys=True), encoding="utf-8")
-
     def _append_one(self, ctx: str, token: str, idx: int) -> None:
-        entries = self._load_entries(ctx)
-        parent_id = entries[-1]["env"]["crystal_id"] if entries else None
         slot_key = f"{token}{idx}"
         val = self._value(token, idx)
-        env = self._cc.seal_crystal(
-            content=val,
-            key=KEK,
-            tenant_id=f"tenant-{ctx}",
-            parent_crystal_id=parent_id,
-            metadata_public={"source": "system", "slot": slot_key, "role": "policy"},
-            cipher="chacha20-poly1305",
-            kek_version=1,
-        )
-        env = self._cc.sign_crystal_envelope(env, ANCHOR_PRIV_BYTES)
-        entries.append({"key": slot_key, "value": val, "env": env})
-        self._save_entries(ctx, entries)
-        self._save_anchor(ctx, entries)
+        with _xdg_state_env(self._xdg_dir()):
+            store = self._open_store(ctx, create=False)
+            store.append(
+                val,
+                metadata_public={"source": "system", "slot": slot_key, "role": "policy"},
+                sign_envelope=True,
+            )
+        slots = self._load_slots(ctx)
+        slots.append({"key": slot_key, "value": val})
+        self._save_slots(ctx, slots)
 
     def seed(self, n: int) -> None:
         for i in range(n):
@@ -250,47 +257,34 @@ class WhiteMagicCrystalsAdapter(MemoryAdapter):
             self._append_one(OTHER, OTHER_TOKEN, i)
 
     def append_genuine(self) -> None:
-        n = len(self._load_entries(CTX))
+        n = len(self._load_slots(CTX))
         self._append_one(CTX, SEED_TOKEN, n)
 
     def erase_genuine(self) -> list[str]:
-        """Erase the newest crystal through the tool's own erasure path.
-
-        The tail is erased so the remaining lineage DAG stays valid without
-        rewriting any untouched record (the attack checks exactly that). The
-        erasure writes a tombstone to the erasure list and rewrites the set
-        commitment — the state T10 then tries to undo.
-        """
-        entries = self._load_entries(CTX)
-        if not entries:
-            raise RuntimeError("no crystal to erase")
-        victim = entries.pop()
-        cid = str(victim["env"]["crystal_id"]).lower()
-        erasures = self._load_erasures(CTX)
-        erasures.append({
-            "crystal_id": cid,
-            "slot": victim["key"],
-            "erased_at": dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
-            "class": "access_control_and_ciphertext_purge",
-        })
-        self._save_entries(CTX, entries)
-        self._save_erasures(CTX, erasures)
-        self._save_anchor(CTX, entries)
-        return [victim["key"]]
+        """Erase the newest crystal through LocalCrystalStore.erase()."""
+        with _xdg_state_env(self._xdg_dir()):
+            store = self._open_store(CTX, create=False)
+            tombstones = store.erase()
+        slots = self._load_slots(CTX)
+        victim_slot = slots.pop()
+        self._save_slots(CTX, slots)
+        erased_key = tombstones[0].get("slot", victim_slot["key"])
+        return [str(erased_key)]
 
     def _records(self, ctx: str) -> list[Record]:
-        entries = self._load_entries(ctx)
+        envs = self._load_envelopes(ctx)
+        slots = self._load_slots(ctx)
         return [
             Record(
                 seq=i,
                 fields={
                     "ctx": ctx,
-                    "key": item["key"],
-                    "value": item["value"],
-                    "env": copy.deepcopy(item["env"]),
+                    "key": slots[i]["key"] if i < len(slots) else f"orphan-{i}",
+                    "value": slots[i]["value"] if i < len(slots) else "",
+                    "env": copy.deepcopy(env),
                 },
             )
-            for i, item in enumerate(entries)
+            for i, env in enumerate(envs)
         ]
 
     def read_all_raw(self) -> list[Record]:
@@ -299,27 +293,32 @@ class WhiteMagicCrystalsAdapter(MemoryAdapter):
     def read_other_raw(self) -> list[Record]:
         return self._records(OTHER)
 
-    def _entry_of(self, record: Record) -> dict:
-        return {
-            "key": record.fields["key"],
-            "value": record.fields["value"],
-            "env": copy.deepcopy(record.fields["env"]),
-        }
-
     def write_raw(self, record: Record) -> None:
-        entries = self._load_entries(CTX)
-        if record.seq < len(entries):
-            entries[record.seq] = self._entry_of(record)
+        envs = self._load_envelopes(CTX)
+        slots = self._load_slots(CTX)
+        slot_obj = {"key": record.fields["key"], "value": record.fields["value"]}
+        env_obj = copy.deepcopy(record.fields["env"])
+        if record.seq < len(envs):
+            envs[record.seq] = env_obj
         else:
-            entries.append(self._entry_of(record))
-        self._save_entries(CTX, entries)
+            envs.append(env_obj)
+        if record.seq < len(slots):
+            slots[record.seq] = slot_obj
+        else:
+            slots.append(slot_obj)
+        self._save_envelopes(CTX, envs)
+        self._save_slots(CTX, slots)
 
     def delete_raw(self, seq: int) -> None:
-        entries = self._load_entries(CTX)
-        if seq < 0 or seq >= len(entries):
+        envs = self._load_envelopes(CTX)
+        slots = self._load_slots(CTX)
+        if seq < 0 or seq >= len(envs):
             raise IndexError(f"no crystal at position {seq}")
-        del entries[seq]
-        self._save_entries(CTX, entries)
+        del envs[seq]
+        if seq < len(slots):
+            del slots[seq]
+        self._save_envelopes(CTX, envs)
+        self._save_slots(CTX, slots)
 
     def mutate_payload(self, record: Record) -> Record:
         fields = copy.deepcopy(record.fields)
@@ -353,15 +352,16 @@ class WhiteMagicCrystalsAdapter(MemoryAdapter):
         )
 
     def replay_onto(self, target_seq: int, donor: Record) -> None:
-        entries = self._load_entries(CTX)
-        slot_key = entries[target_seq]["key"]
-        donor_env = copy.deepcopy(donor.fields["env"])
-        entries[target_seq] = {
+        envs = self._load_envelopes(CTX)
+        slots = self._load_slots(CTX)
+        slot_key = slots[target_seq]["key"]
+        envs[target_seq] = copy.deepcopy(donor.fields["env"])
+        slots[target_seq] = {
             "key": slot_key,
             "value": donor.fields["value"],
-            "env": donor_env,
         }
-        self._save_entries(CTX, entries)
+        self._save_envelopes(CTX, envs)
+        self._save_slots(CTX, slots)
 
     def read_meta(self, seq: int) -> dict:
         return copy.deepcopy(self._records(CTX)[seq].fields["env"].get("metadata_public", {}))
@@ -392,50 +392,156 @@ class WhiteMagicCrystalsAdapter(MemoryAdapter):
 
     def verify(self) -> bool:
         self.verify_detail = None
-        entries = self._load_entries(CTX)
-        envelopes = [e["env"] for e in entries]
-        apath = self._anchor_path(CTX)
-        comm = json.loads(apath.read_text(encoding="utf-8")) if apath.is_file() else None
         try:
+            with _xdg_state_env(self._xdg_dir()):
+                store = self._open_store(CTX, create=False)
+                records = store.read_all()
+            slots = self._load_slots(CTX)
+            if len(slots) != len(records):
+                raise ValueError(
+                    f"slot count mismatch: {len(slots)} != {len(records)}"
+                )
+            for idx, (slot, rec) in enumerate(zip(slots, records)):
+                slot_claim = (rec.get("metadata_public") or {}).get("slot")
+                if slot_claim != slot["key"]:
+                    raise ValueError(
+                        f"slot binding mismatch at index {idx}: {slot_claim!r} != {slot['key']!r}"
+                    )
+                if rec["plaintext"].decode("utf-8") != slot["value"]:
+                    raise ValueError(f"unsealed plaintext mismatch at index {idx}")
+        except (ValueError, InvalidTag, FileNotFoundError, OSError, KeyError) as exc:
+            self.verify_detail = f"{type(exc).__name__}: {exc}"[:200]
+            return False
+        self.verify_detail = f"verified and unsealed {len(records)} crystals ok"
+        return True
+
+
+class WhiteMagicCrystalsInStoreAdapter(WhiteMagicCrystalsAdapter):
+    """Counterfactual storing the signed commitment inside `store-<ctx>/` via stateless calls."""
+
+    name = "whitemagic-crystals+in-store"
+
+    def _anchor_path(self, ctx: str) -> Path:
+        return self._dir(ctx) / ANCHOR_FILE
+
+    def _save_erasures(self, ctx: str, erasures: list[dict]) -> None:
+        self._erasures_path(ctx).write_text(
+            json.dumps(erasures, indent=2, sort_keys=True), encoding="utf-8"
+        )
+
+    def _save_anchor(self, ctx: str, envs: list[dict]) -> None:
+        """Rewrite the set commitment inside `store-<ctx>/`, rolling back with it."""
+        apath = self._anchor_path(ctx)
+        apath.parent.mkdir(parents=True, exist_ok=True)
+        comm = self._cc.compute_crystal_set_commitment(
+            envs,
+            self._tenant_hash(ctx),
+            signing_key=ANCHOR_PRIV_BYTES,
+            erasures=self._load_erasures(ctx),
+        )
+        apath.write_text(json.dumps(comm, indent=2, sort_keys=True), encoding="utf-8")
+
+    def setup(self) -> None:
+        self._root = Path(tempfile.mkdtemp(prefix="agmi-wm-crystals-"))
+        for ctx in (CTX, OTHER):
+            self._dir(ctx).mkdir(parents=True, exist_ok=True)
+            self._save_envelopes(ctx, [])
+            self._save_erasures(ctx, [])
+            self._save_slots(ctx, [])
+            self._save_anchor(ctx, [])
+
+    def _append_one(self, ctx: str, token: str, idx: int) -> None:
+        envs = self._load_envelopes(ctx)
+        slots = self._load_slots(ctx)
+        parent_id = envs[-1]["crystal_id"] if envs else None
+        slot_key = f"{token}{idx}"
+        val = self._value(token, idx)
+        env = self._cc.seal_crystal(
+            content=val,
+            key=KEK,
+            tenant_id=f"tenant-{ctx}",
+            parent_crystal_id=parent_id,
+            metadata_public={"source": "system", "slot": slot_key, "role": "policy"},
+            cipher="chacha20-poly1305",
+            kek_version=1,
+        )
+        env = self._cc.sign_crystal_envelope(env, ANCHOR_PRIV_BYTES)
+        envs.append(env)
+        slots.append({"key": slot_key, "value": val})
+        self._save_envelopes(ctx, envs)
+        self._save_slots(ctx, slots)
+        self._save_anchor(ctx, envs)
+
+    def erase_genuine(self) -> list[str]:
+        """Erase the newest crystal and update the in-store erasure list and commitment."""
+        envs = self._load_envelopes(CTX)
+        slots = self._load_slots(CTX)
+        if not envs:
+            raise RuntimeError("no crystal to erase")
+        victim_env = envs.pop()
+        victim_slot = slots.pop()
+        cid = str(victim_env["crystal_id"]).lower()
+        erasures = self._load_erasures(CTX)
+        erasures.append(
+            {
+                "crystal_id": cid,
+                "slot": victim_slot["key"],
+                "erased_at": dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+                "class": "access_control_and_ciphertext_purge",
+            }
+        )
+        self._save_envelopes(CTX, envs)
+        self._save_slots(CTX, slots)
+        self._save_erasures(CTX, erasures)
+        self._save_anchor(CTX, envs)
+        return [victim_slot["key"]]
+
+    def verify(self) -> bool:
+        self.verify_detail = None
+        envs = self._load_envelopes(CTX)
+        slots = self._load_slots(CTX)
+        apath = self._anchor_path(CTX)
+        try:
+            if not apath.is_file():
+                raise ValueError("missing commitment anchor")
+            comm = json.loads(apath.read_text(encoding="utf-8"))
             plaintexts = self._cc.verify_and_unseal_crystal_set(
-                envelopes,
+                envs,
                 KEK,
                 self._tenant_hash(CTX),
                 expected_commitment=comm,
                 anchor_public_key=ANCHOR_PUB_BYTES,
                 erasures=self._load_erasures(CTX),
             )
-            for idx, (entry, pt_bytes) in enumerate(zip(entries, plaintexts)):
-                slot_claim = (entry["env"].get("metadata_public") or {}).get("slot")
-                if slot_claim != entry["key"]:
-                    raise ValueError(f"slot binding mismatch at index {idx}: {slot_claim!r} != {entry['key']!r}")
-                if pt_bytes.decode("utf-8") != entry["value"]:
+            if len(slots) != len(plaintexts):
+                raise ValueError(
+                    f"slot count mismatch: {len(slots)} != {len(plaintexts)}"
+                )
+            for idx, (env, slot, pt_bytes) in enumerate(zip(envs, slots, plaintexts)):
+                slot_claim = (env.get("metadata_public") or {}).get("slot")
+                if slot_claim != slot["key"]:
+                    raise ValueError(
+                        f"slot binding mismatch at index {idx}: {slot_claim!r} != {slot['key']!r}"
+                    )
+                if pt_bytes.decode("utf-8") != slot["value"]:
                     raise ValueError(f"unsealed plaintext mismatch at index {idx}")
-        except (ValueError, InvalidTag) as exc:
+        except (ValueError, InvalidTag, FileNotFoundError, OSError, KeyError) as exc:
             self.verify_detail = f"{type(exc).__name__}: {exc}"[:200]
             return False
         self.verify_detail = f"verified and unsealed {len(plaintexts)} crystals ok"
         return True
 
 
-class WhiteMagicCrystalsAnchoredAdapter(WhiteMagicCrystalsAdapter):
-    """WhiteMagic Memory Crystals with the signed set commitment anchored off the store directory."""
-
-    name = "whitemagic-crystals+anchor"
-    anchor_off_store = True
-
-
-class WhiteMagicCrystalsCiphertextAuditAdapter(WhiteMagicCrystalsAnchoredAdapter):
-    """Signed encrypted-envelope audit without a decryption key.
+class WhiteMagicCrystalsCiphertextAuditAdapter(WhiteMagicCrystalsAdapter):
+    """Signed encrypted-envelope audit without a decryption key (`LocalCrystalStore.verify_third_party`).
 
     Formerly known as whitemagic-crystals+l5. This row measures envelope integrity
-    at audit time. Its ciphertext payload deliberately excludes the detached plaintext
-    field, which cannot be bound to ciphertext without unsealing or an additional proof
-    construction.
+    at audit time using the shipped off-store anchor. Its ciphertext payload deliberately
+    excludes the detached plaintext field, which cannot be bound to ciphertext without
+    unsealing or an additional proof construction.
     """
 
     name = "whitemagic-crystals+ciphertext-audit"
-    anchor_off_store = True
     detection_point = "audit"
 
     @staticmethod
@@ -453,34 +559,33 @@ class WhiteMagicCrystalsCiphertextAuditAdapter(WhiteMagicCrystalsAnchoredAdapter
 
     def verify(self) -> bool:
         self.verify_detail = None
-        entries = self._load_entries(CTX)
-        envelopes = [e["env"] for e in entries]
-        apath = self._anchor_path(CTX)
-        comm = json.loads(apath.read_text(encoding="utf-8")) if apath.is_file() else None
         try:
-            if comm is None:
-                raise ValueError("missing off-store commitment")
-            self._cc.verify_crystal_set_third_party(
-                envelopes,
-                self._tenant_hash(CTX),
-                expected_commitment=comm,
-                signer_public_key=ANCHOR_PUB_BYTES,
-                erasures=self._load_erasures(CTX),
-            )
-            for idx, entry in enumerate(entries):
-                slot_claim = (entry["env"].get("metadata_public") or {}).get("slot")
-                if slot_claim != entry["key"]:
-                    raise ValueError(f"slot binding mismatch at index {idx}: {slot_claim!r} != {entry['key']!r}")
-        except (ValueError, InvalidTag) as exc:
+            with _xdg_state_env(self._xdg_dir()):
+                store = self._open_store(CTX, create=False)
+                result = store.verify_third_party(signer_public_key=ANCHOR_PUB_BYTES)
+            envs = self._load_envelopes(CTX)
+            slots = self._load_slots(CTX)
+            if len(slots) != len(envs):
+                raise ValueError(
+                    f"slot count mismatch: {len(slots)} != {len(envs)}"
+                )
+            for idx, (env, slot) in enumerate(zip(envs, slots)):
+                slot_claim = (env.get("metadata_public") or {}).get("slot")
+                if slot_claim != slot["key"]:
+                    raise ValueError(
+                        f"slot binding mismatch at index {idx}: {slot_claim!r} != {slot['key']!r}"
+                    )
+        except (ValueError, InvalidTag, FileNotFoundError, OSError, KeyError) as exc:
             self.verify_detail = f"{type(exc).__name__}: {exc}"[:200]
             return False
         self.verify_detail = (
-            f"audited {len(envelopes)} signed encrypted envelopes without KEK; "
+            f"audited {result.get('count', len(envs))} signed encrypted envelopes without KEK; "
             "detached plaintext not evaluated"
         )
         return True
 
 
-# Backward-compatible alias for the legacy working name
+# Backward-compatible aliases for legacy working names
+WhiteMagicCrystalsAnchoredAdapter = WhiteMagicCrystalsAdapter
 WhiteMagicCrystalsL5Adapter = WhiteMagicCrystalsCiphertextAuditAdapter
 
