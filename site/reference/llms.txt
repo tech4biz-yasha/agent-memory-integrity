@@ -45,6 +45,9 @@
 - [Verax memory, signing keys and the memory head inside the state directory, the default layout](https://agentmemoryintegrity.org/stores/verax-memory.html): @verax-ai/body 0.8.2; 1 served, 0 reported, 8 rejected, detection on read, level L3
 - [Verax memory, head outside, signing keys and the memory head outside the state directory, set with VERAX_KEYS_DIR](https://agentmemoryintegrity.org/stores/verax-memory-head-outside.html): @verax-ai/body 0.8.2; 0 served, 0 reported, 9 rejected, detection on read, level L4
 - [NetOps Copilot, hash-chained change journal, verify_journal() audit](https://agentmemoryintegrity.org/stores/netops-copilot-journal.html): netops-copilot 0.1.0 at d7e4ec0; 4 served, 6 reported, 0 rejected, detection on audit, level L0
+- [WhiteMagic Memory Crystals, LocalCrystalStore default, commitment kept off the store](https://agentmemoryintegrity.org/stores/whitemagic-crystals.html): whitemagic crystal_client.py at 273b177b; 0 served, 0 reported, 10 rejected, detection on read, level L4
+- [WhiteMagic Memory Crystals, commitment placed inside the store directory, the counterfactual](https://agentmemoryintegrity.org/stores/whitemagic-crystals-in-store.html): whitemagic crystal_client.py at 273b177b; 2 served, 0 reported, 8 rejected, detection on read, level L3
+- [WhiteMagic Memory Crystals, signed-ciphertext audit without the key-encryption key](https://agentmemoryintegrity.org/stores/whitemagic-crystals-ciphertext-audit.html): whitemagic crystal_client.py at 273b177b; 0 served, 10 reported, 0 rejected, detection on audit, level L0
 
 ## Edits and attacks
 - [T1 Content tamper](https://agentmemoryintegrity.org/edits/tamper.html): Change the text inside one existing record, keeping its encoding intact.

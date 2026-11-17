@@ -65,6 +65,12 @@ ROWS = {
         "verax-memory+head-outside",
     "NetOps Copilot change journal, unkeyed hash chain, `verify_journal()` audit":
         "netops-copilot-journal",
+    "WhiteMagic Memory Crystals, LocalCrystalStore default with the commitment kept off the store, read path":
+        "whitemagic-crystals",
+    "WhiteMagic Memory Crystals, commitment placed inside the store directory, read path":
+        "whitemagic-crystals+in-store",
+    "WhiteMagic Memory Crystals, signed-ciphertext audit without the key-encryption key, `verify_third_party()` audit":
+        "whitemagic-crystals+ciphertext-audit",
 }
 
 

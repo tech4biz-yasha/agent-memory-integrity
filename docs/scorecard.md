@@ -41,6 +41,9 @@ Generated from the results file by `agmi.render`; do not edit by hand. Run of 20
 | verax-memory | read | rejected | rejected | rejected | rejected | rejected |
 | verax-memory+head-outside | read | rejected | rejected | rejected | rejected | rejected |
 | netops-copilot-journal | audit | reported | accepted | reported | reported | accepted |
+| whitemagic-crystals | read | rejected | rejected | rejected | rejected | rejected |
+| whitemagic-crystals+in-store | read | rejected | rejected | rejected | rejected | rejected |
+| whitemagic-crystals+ciphertext-audit | audit | reported | reported | reported | reported | reported |
 
 ## Through the front door
 
@@ -582,3 +585,48 @@ Measured on: macOS, Python 3.12, netops-copilot 0.1.0 at d7e4ec0
 - `metadata_tamper`: reported. detected on reload (verify_journal: False (history prints 'Journal integrity (hash chain): BROKEN')).
 - `snapshot_rollback`: accepted. the older copy opened as current; the newest genuine record is gone without an error.
 - `erase_resurrect`: accepted. the restored copy opened as current; the record the store had erased is served again without an error.
+
+### whitemagic-crystals
+
+Measured on: macOS, Python 3.12, whitemagic crystal_client.py at 273b177b
+
+- `tamper`: rejected. detected on reload (CrystalVerificationError: client_sig Ed25519 verification failed: ).
+- `truncate`: rejected. detected on reload (CrystalRollbackError: crystal set: revision mismatch: store is at 3, anchor committed to 5).
+- `delete_middle`: rejected. detected on reload (CrystalRollbackError: crystal set: revision mismatch: store is at 4, anchor committed to 5).
+- `reorder`: rejected. detected on reload (CrystalLineageError: lineage link broken at index 1: parent_crystal_id sha256:0d9b5c5001c916876fef8ac0b8f587e0ff063403749cdeb3451151775b2cde18 != previous sha256:e17f58c84dec63b45cbb2158598a2fa6e01078).
+- `forge`: rejected. detected on reload (CrystalRollbackError: crystal set: revision mismatch: store is at 6, anchor committed to 5).
+- `cross_replay`: rejected. detected on reload (CrystalContextError: cross-context crystal replay at index 4: tenant_hash sha256:744315f5559aa17a772831e0f384954e007e57d9f3013bc7a7822377277e2c3a != sha256:be62333906959e38d1e89c3c52ed672f71534d3def6a).
+- `rollback_replay`: rejected. detected on reload (CrystalLineageError: duplicate crystal_id at index 4: sha256:9c644a7cdefaa1d031fdf626260cf5b6a66eecc1ae1e4e07b100db543ec21306).
+- `metadata_tamper`: rejected. detected on reload (CrystalVerificationError: client_sig Ed25519 verification failed: ).
+- `snapshot_rollback`: rejected. the store noticed it was older than its last committed state (CrystalRollbackError: crystal set: revision mismatch: store is at 5, anchor committed to 6).
+- `erase_resurrect`: rejected. the store noticed that a record it had erased was back (CrystalRollbackError: crystal set: erasure_count mismatch: store has 0, anchor committed to 1).
+
+### whitemagic-crystals+in-store
+
+Measured on: macOS, Python 3.12, whitemagic crystal_client.py at 273b177b
+
+- `tamper`: rejected. detected on reload (CrystalVerificationError: client_sig Ed25519 verification failed: ).
+- `truncate`: rejected. detected on reload (CrystalRollbackError: crystal set: revision mismatch: store is at 3, anchor committed to 5).
+- `delete_middle`: rejected. detected on reload (CrystalRollbackError: crystal set: revision mismatch: store is at 4, anchor committed to 5).
+- `reorder`: rejected. detected on reload (CrystalLineageError: lineage link broken at index 1: parent_crystal_id sha256:84431d8df353795cecf62e89b3bcb27937e273d3f2e6df380edbb58b92122962 != previous sha256:980425d3a95b35b86389096cab49e0a17dac3b).
+- `forge`: rejected. detected on reload (CrystalRollbackError: crystal set: revision mismatch: store is at 6, anchor committed to 5).
+- `cross_replay`: rejected. detected on reload (CrystalContextError: cross-context crystal replay at index 4: tenant_hash sha256:744315f5559aa17a772831e0f384954e007e57d9f3013bc7a7822377277e2c3a != sha256:be62333906959e38d1e89c3c52ed672f71534d3def6a).
+- `rollback_replay`: rejected. detected on reload (CrystalLineageError: duplicate crystal_id at index 4: sha256:b9cf164ba383969bf47ac86642e293b22e086fd2568a47af4dbc3825feab0ec8).
+- `metadata_tamper`: rejected. detected on reload (CrystalVerificationError: client_sig Ed25519 verification failed: ).
+- `snapshot_rollback`: accepted. the older copy opened as current; the newest genuine record is gone without an error.
+- `erase_resurrect`: accepted. the restored copy opened as current; the record the store had erased is served again without an error.
+
+### whitemagic-crystals+ciphertext-audit
+
+Measured on: macOS, Python 3.12, whitemagic crystal_client.py at 273b177b
+
+- `tamper`: reported. detected on reload (CrystalVerificationError: crystal signature verification failed at index 2: client_sig Ed25519 verification failed: ).
+- `truncate`: reported. detected on reload (CrystalRollbackError: crystal set (third-party): revision mismatch: store is at 3, anchor committed to 5).
+- `delete_middle`: reported. detected on reload (CrystalRollbackError: crystal set (third-party): revision mismatch: store is at 4, anchor committed to 5).
+- `reorder`: reported. detected on reload (CrystalLineageError: lineage link broken at index 1: parent_crystal_id sha256:8089c8d48caf65845267d6664420dfb88e75f8aedca61316a0f2dc99aa4c0f07 != previous sha256:cfdf86a333488fc1df2233f6694afc9b3619d4).
+- `forge`: reported. detected on reload (CrystalRollbackError: crystal set (third-party): revision mismatch: store is at 6, anchor committed to 5).
+- `cross_replay`: reported. detected on reload (CrystalContextError: cross-context crystal replay at index 4: tenant_hash sha256:744315f5559aa17a772831e0f384954e007e57d9f3013bc7a7822377277e2c3a != sha256:be62333906959e38d1e89c3c52ed672f71534d3def6a).
+- `rollback_replay`: reported. detected on reload (CrystalLineageError: duplicate crystal_id at index 4: sha256:9bfc55a6c81754d5d47bb351abddaa99aa88a724c89b03d06ccdc86261dcc38b).
+- `metadata_tamper`: reported. detected on reload (CrystalVerificationError: crystal signature verification failed at index 2: client_sig Ed25519 verification failed: ).
+- `snapshot_rollback`: reported. the store noticed it was older than its last committed state (CrystalRollbackError: crystal set (third-party): revision mismatch: store is at 5, anchor committed to 6).
+- `erase_resurrect`: reported. the store noticed that a record it had erased was back (CrystalRollbackError: crystal set (third-party): erasure_count mismatch: store has 0, anchor committed to 1).

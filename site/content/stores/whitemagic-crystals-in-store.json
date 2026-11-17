@@ -1,0 +1,16 @@
+{
+ "title": "WhiteMagic Memory Crystals",
+ "subtitle": "commitment placed inside the store directory, the counterfactual",
+ "label": "whitemagic-crystals+in-store",
+ "version": "whitemagic crystal_client.py at 273b177b",
+ "measured_date": "2026-11-17",
+ "measured_on": "whitemagic crystal_client.py at 273b177b (sha256 e44b13f2), Python 3.12, macOS",
+ "source_url": "https://github.com/lbailey94/whitemagic",
+ "source_label": "github.com/lbailey94/whitemagic",
+ "What this means": "<p>This is the counterfactual for the default row: the same signed commitment, written inside the store directory as <code>commitment.json</code>. The eight record edits are still refused on read. The whole-store rollback and the erasure resurrection are accepted: an attacker who restores an older copy of the directory restores the commitment with it, and the older state opens as current. It is the deployment to avoid, and the reason the default keeps the anchor elsewhere.</p>",
+ "Where the attacker stands": "<p>The attacker reads and writes the WhiteMagic store directory, as a mounted volume, a shared disk or a restored backup would allow. He holds no signing key. In the default and audit rows he cannot reach the anchors directory under XDG_STATE_HOME; in the in-store row the commitment sits inside the directory he controls. An attacker who holds a key or the anchors directory is a different measurement and these rows do not speak for it.</p>",
+ "verdicts_intro": "<p><strong>Detection point:</strong> the read path. 8 of the ten edits were refused there, 2 served as genuine, 0 not applicable.</p><p><strong>Level L3.</strong> <a href=\"../levels/l3.html\">What L3 means</a>.</p>",
+ "reproduce_intro": "Everything runs offline. The run seeds a fresh store through the client's own API, applies each edit beneath it, reopens the store and records what came back.",
+ "reproduce": "pip install agent-memory-integrity\ncurl -sL -o crystal_client.py https://raw.githubusercontent.com/lbailey94/whitemagic/273b177b5c59eb3148b721a85683ab929041d246/scripts/crystal_client.py   # sha256 e44b13f2\nexport AGMI_WHITEMAGIC_CRYSTAL_CLIENT=&lt;path to crystal_client.py&gt;\npython agmi/full_runner.py --json results/scorecard.json   # every row, this one included\npython -m agmi.agent --target whitemagic-crystals+in-store --compose",
+ "related": "<li><a href=\"../stores/whitemagic-crystals.html\">WhiteMagic Memory Crystals, default</a></li><li><a href=\"../stores/whitemagic-crystals-in-store.html\">WhiteMagic Memory Crystals, commitment inside the store</a></li><li><a href=\"../stores/whitemagic-crystals-ciphertext-audit.html\">WhiteMagic Memory Crystals, signed-ciphertext audit</a></li><li><a href=\"../stores/verax-memory-head-outside.html\">Verax memory, head outside</a></li><li><a href=\"../stores/recallspection-exact-anchor.html\">Recallspection ExactMemory, anchored</a></li>"
+}
