@@ -164,9 +164,12 @@ def at_rest_target(name: str) -> MemoryAdapter:
     if name == "netops-copilot-journal":
         from agmi.adapters.netops_copilot_journal import NetopsCopilotJournalAdapter
         return NetopsCopilotJournalAdapter()
+    if name == "netops-copilot-journal+keyed-anchor":
+        from agmi.adapters.netops_copilot_journal import NetopsCopilotKeyedJournalAdapter
+        return NetopsCopilotKeyedJournalAdapter()
     raise SystemExit(
         f"unknown at-rest target {name!r}; choose one of: reference, "
         f"langgraph-sqlite, llamaindex, crewai, openai-agents, inspeximus-default, "
         f"inspeximus-rcpt+dir, inspeximus-rcpt+dir+home, vertex-memory-bank, bedrock-agentcore-events, surgical-devops-g7, recallspection-exact, recallspection-exact+anchor, hdp-token-content-ref, hdp-token-uuid, openclaw-memory-md, hermes-memory-md, "
         f"atmem-chain, atmem-chain+checkpoint, whitemagic-crystals, whitemagic-crystals+in-store, whitemagic-crystals+ciphertext-audit, "
-        f"verax-memory, verax-memory+head-outside, netops-copilot-journal")
+        f"verax-memory, verax-memory+head-outside, netops-copilot-journal, netops-copilot-journal+keyed-anchor")

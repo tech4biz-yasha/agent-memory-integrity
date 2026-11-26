@@ -215,3 +215,51 @@ class NetopsCopilotJournalAdapter(MemoryAdapter):
             self.verify_detail = "verify_journal: False (history prints 'Journal integrity (hash chain): BROKEN')"
             return False
         return True
+
+
+class NetopsCopilotKeyedJournalAdapter(NetopsCopilotJournalAdapter):
+    """The same journal with the key file and the anchor directory outside the state directory.
+
+    NetOps Copilot 0.2.0 keys the chain when NETOPS_JOURNAL_KEY_FILE and
+    NETOPS_JOURNAL_ANCHOR_DIR are set (here passed to `Store` directly): each
+    line carries `alg: hmac-sha256`, the store's `epoch`, and `hash`, an
+    HMAC-SHA256 over the line's canonical JSON bound to the state directory.
+    After each append the tool writes the head (epoch, seq, hash) to the
+    anchor directory, and `Store.reset()` moves the anchor to a new epoch.
+    `Store.journal()`, the read path that `rollback()` and `append()` decide
+    from, verifies the chain, the key and the anchor and raises
+    `JournalIntegrityError` otherwise. Detection point is therefore the read.
+
+    The attacker reads and writes the state directory, not the key file nor
+    the anchor directory: both live in a sibling folder that the snapshot and
+    the erasure leave alone.
+    """
+
+    name = "netops-copilot-journal+keyed-anchor"
+    detection_point = "read"
+
+    @staticmethod
+    def measured_on() -> str:
+        return "netops-copilot 0.2.0 at bd7337c"
+
+    def setup(self) -> None:
+        import secrets
+        super().setup()
+        self._secrets = Path(self._dir) / "secrets"
+        self._secrets.mkdir()
+        (self._secrets / "journal.key").write_text(secrets.token_hex(32))
+
+    def _store(self, ctx: str):
+        from netops_copilot.changes import Store
+        return Store(self._root(ctx), key_file=self._secrets / "journal.key",
+                     anchor_dir=self._secrets / "anchors")
+
+    def verify(self) -> bool:
+        from netops_copilot.changes import JournalIntegrityError
+        self.verify_detail = None
+        try:
+            self._store(CTX).journal()
+        except JournalIntegrityError as exc:
+            self.verify_detail = f"Store.journal(): {exc}"[:200]
+            return False
+        return True
