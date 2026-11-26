@@ -247,8 +247,10 @@ def full_scorecard() -> str:
         continuum_rows = []
     try:
         import netops_copilot  # noqa: F401
-        from agmi.adapters.netops_copilot_journal import NetopsCopilotJournalAdapter
-        netops_rows = [("netops-copilot-journal", NetopsCopilotJournalAdapter(), None)]
+        from agmi.adapters.netops_copilot_journal import (
+            NetopsCopilotJournalAdapter, NetopsCopilotKeyedJournalAdapter)
+        netops_rows = [("netops-copilot-journal", NetopsCopilotJournalAdapter(), None),
+                       ("netops-copilot-journal+keyed-anchor", NetopsCopilotKeyedJournalAdapter(), None)]
     except ImportError:
         netops_rows = []
     try:
